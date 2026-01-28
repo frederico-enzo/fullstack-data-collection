@@ -3,9 +3,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import './formulario.css' 
-/* ==========================
-   Schema de validação Zod
-========================== */
 
 const schema = z.object({
   name: z.string().min(3, "Nome deve ter pelo menos 3 letras"),
@@ -93,37 +90,6 @@ export function Formulario() {
 
             <input placeholder="Email" {...register("email")} />
             <p>{errors.email?.message}</p>
-          </>
-        )}
-
-        {/* ======================
-            STEP 2
-        ====================== */}
-        {step === 1 && (
-          <>
-            <input
-              type="password"
-              placeholder="Senha"
-              {...register("password")}
-            />
-            <p>{errors.password?.message}</p>
-
-            <input
-              type="password"
-              placeholder="Confirmar senha"
-              {...register("confirmPassword")}
-            />
-            <p>{errors.confirmPassword?.message}</p>
-          </>
-        )}
-
-        {/* ======================
-            STEP 3
-        ====================== */}
-        {step === 2 && (
-          <>
-            <input placeholder="Endereço" {...register("address")} />
-            <p>{errors.address?.message}</p>
           </>
         )}
 
