@@ -1,5 +1,5 @@
 import Link from "next/dist/client/link";
-import FormularioPage from "./interface/components/formulario/page";
+import FormularioPage from "./interface/formulario/page";
 
 export default function Home() {
   return (
@@ -12,7 +12,7 @@ export default function Home() {
           Sistema de Coleta de Dados para Analise de Transição Energética no Oeste do Paraná.
         </p>
         <Link
-          href="/interface/components/formulario/"
+          href="/interface/formulario/"
           className="inline-block rounded bg-blue-500 px-4 py-2 font-semibold text-white hover:bg-blue-600"
         >
           Acessar Formulário
