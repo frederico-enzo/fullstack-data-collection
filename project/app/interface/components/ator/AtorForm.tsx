@@ -6,6 +6,8 @@ interface AtorFormProps {
     onCreated: (ator: any) => void;
 }
 
+
+
 export default function AtorForm({ onCreated }: AtorFormProps) {
     const [loading, setLoading] = useState(false);
 
@@ -22,14 +24,27 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
 
         const res = await fetch("/api/ator", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify(form),
         });
 
+        // ✅ Se deu erro, mostrar mensagem e parar
+        if (!res.ok) {
+            const err = await res.json();
+            alert(err.error);
+            setLoading(false);
+            return;
+        }
+
+        // ✅ Só continua se deu certo
         const ator = await res.json();
         setLoading(false);
 
         onCreated(ator);
     }
+
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -45,7 +60,7 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
                         setForm({ ...form, nome: e.target.value })
                     }
                     placeholder="Nome do ator"
-                    className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-gray-200 outline-none"
                 />
             </div>
 
@@ -60,7 +75,7 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
                         setForm({ ...form, telefone: e.target.value })
                     }
                     placeholder="(99) 99999-9999"
-                    className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-gray-200 outline-none"
                 />
             </div>
 
@@ -76,7 +91,7 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
                         setForm({ ...form, email: e.target.value })
                     }
                     placeholder="email@exemplo.com"
-                    className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full  mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-gray-200 outline-none"
                 />
             </div>
 
@@ -91,7 +106,7 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
                         setForm({ ...form, cnpj_cpf: e.target.value })
                     }
                     placeholder="000.000.000-00"
-                    className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full mt-1 px-4 py-2 border rounded-xl focus:ring-2 focus:ring-gray-200 outline-none"
                 />
             </div>
 
