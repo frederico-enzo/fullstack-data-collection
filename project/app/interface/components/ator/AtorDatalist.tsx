@@ -2,62 +2,73 @@
 
 import { useEffect, useState } from "react";
 
-export default function AtorDatalist({ onSelected }: { onSelected: (id: string | number) => void }) {
-    const [atores, setAtores] = useState<{ id: string | number; nome: string }[]>([]);
-    const [value, setValue] = useState("");
+export default function AtorDatalist({
+  onSelected,
+}: {
+  onSelected: (id: string | number) => void;
+}) {
+  const [atores, setAtores] = useState<
+    { id: string | number; nome: string }[]
+  >([]);
 
-    useEffect(() => {
-        async function load() {
-            const res = await fetch("/api/ator");
-            const data = await res.json();
-            setAtores(data);
-        }
+  const [value, setValue] = useState("");
 
-        load();
-    }, []);
-
-    function handleSelect(nome: string) {
-        const ator = atores.find((a) => a.nome === nome);
-
-        if (ator) {
-            onSelected(ator.id);
-        }
+  useEffect(() => {
+    async function load() {
+      const res = await fetch("/api/ator");
+      const data = await res.json();
+      setAtores(data);
     }
 
-    return (
-        <div className="space-y-3">
-            <label className="block text-sm font-medium text-gray-700">
-                Buscar ator
-            </label>
+    load();
+  }, []);
 
-            <input
-                list="atores"
-                value={value}
-                onChange={(e) => {
-                    setValue(e.target.value);
-                    handleSelect(e.target.value);
-                }}
-                placeholder="Digite o nome do ator..."
-                className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-gray-200 outline-none"
-            />
+  function handleSelect(nome: string) {
+    const ator = atores.find((a) => a.nome === nome);
 
-            <datalist id="atores">
-                {atores.map((a) => (
-                    <option key={a.id} value={a.nome} />
-                ))}
-            </datalist>
+    if (ator) {
+      onSelected(ator.id);
+    }
+  }
 
-            <p className="text-sm text-gray-500">
-                Comece a digitar para filtrar automaticamente.
-            </p>
+  return (
+    <div className="d-flex flex-column gap-3">
 
-            <button
-                disabled={!value}
-                onClick={() => handleSelect(value)}
-                className="w-full py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-                Continuar
-            </button>
-        </div>
-    );
+      {/* Input com Floating Label */}
+      <div className="form-floating">
+        <input
+          list="atores"
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+            handleSelect(e.target.value);
+          }}
+          placeholder="Buscar ator"
+          className="form-control rounded-3px"
+        />
+        <label>Buscar ator</label>
+
+        {/* Lista */}
+        <datalist id="atores">
+          {atores.map((a) => (
+            <option key={a.id} value={a.nome} />
+          ))}
+        </datalist>
+      </div>
+
+      {/* Texto auxiliar */}
+      <small className="text-muted">
+        Comece a digitar para filtrar automaticamente.
+      </small>
+
+      {/* Botão */}
+      <button
+        disabled={!value}
+        onClick={() => handleSelect(value)}
+        className="btn btn-primary py-3 fw-semibold rounded-3px"
+      >
+        Continuar
+      </button>
+    </div>
+  );
 }

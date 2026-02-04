@@ -5,68 +5,73 @@ import AtorForm from "./AtorForm";
 import AtorDatalist from "./AtorDatalist";
 
 interface StepAtorProps {
-    onNext: (id: string) => void;
+  onNext: (id: string) => void;
 }
 
 export default function StepAtor({ onNext }: StepAtorProps) {
-    const [modo, setModo] = useState<"novo" | "existente">("novo");
+  const [modo, setModo] = useState<"novo" | "existente">("novo");
 
-    return (
-        <div className="max-w-xl mx-auto mt-10 bg-white shadow-lg rounded-2xl p-8">
-            {/* Header */}
-            <h2 className="text-2xl font-bold text-gray-800">Step 1 — Ator</h2>
+  return (
+    <div className="container mt-5">
+      <div
+        className="card shadow-sm mx-auto rounded-3px"
+        style={{ maxWidth: "600px" }}
+      >
+        <div className="card-body p-4">
+          {/* Header */}
+          <h2 className="fw-bold mb-1">Step 1 — Ator</h2>
 
-            <p className="text-gray-500 text-sm mt-1">
-                Cadastre um novo ator ou selecione um existente.
-            </p>
+          <p className="text-muted mb-4">
+            Cadastre um novo ator ou selecione um existente.
+          </p>
 
-            {/* Toggle Buttons */}
-            <div className="flex gap-3 mt-6">
-                <button
-                    type="button"
-                    onClick={() => setModo("novo")}
-                    className={`flex-1 py-2 rounded-xl font-medium transition ${modo === "novo"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                        }`}
-                >
-                    Novo Ator
-                </button>
+          {/* Toggle Buttons */}
+          <div className="btn-group w-100 mb-4">
+            <button
+              type="button"
+              onClick={() => setModo("novo")}
+              className={`btn ${
+                modo === "novo" ? "btn-primary" : "btn-outline-primary"
+              } rounded-3px`}
+            >
+              Novo Ator
+            </button>
 
-                <button
-                    type="button"
-                    onClick={() => setModo("existente")}
-                    className={`flex-1 py-2 rounded-xl font-medium transition ${modo === "existente"
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                        }`}
-                >
-                    Selecionar Existente
-                </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setModo("existente")}
+              className={`btn ${
+                modo === "existente"
+                  ? "btn-primary"
+                  : "btn-outline-primary"
+              } rounded-3px`}
+            >
+              Selecionar Existente
+            </button>
+          </div>
 
-            {/* Conteúdo */}
-            <div className="mt-8">
-                {modo === "novo" && (
-                    <AtorForm
-                        onCreated={(ator) => {
-                            if (ator?.id) {
-                                onNext(String(ator.id));
-                            }
-                        }}
-                    />
-                )}
+          {/* Conteúdo */}
+          {modo === "novo" && (
+            <AtorForm
+              onCreated={(ator) => {
+                if (ator?.id) {
+                  onNext(String(ator.id));
+                }
+              }}
+            />
+          )}
 
-                {modo === "existente" && (
-                    <AtorDatalist
-                        onSelected={(atorId) => {
-                            if (atorId) {
-                                onNext(String(atorId));
-                            }
-                        }}
-                    />
-                )}
-            </div>
+          {modo === "existente" && (
+            <AtorDatalist
+              onSelected={(atorId) => {
+                if (atorId) {
+                  onNext(String(atorId));
+                }
+              }}
+            />
+          )}
         </div>
-    );
+      </div>
+    </div>
+  );
 }
