@@ -26,8 +26,8 @@ export const atorSchema = z.object({
         .min(11, "CPF/CNPJ inválido")
         .max(14, "CPF/CNPJ inválido")
         .optional()
-        .nullable()
-        .transform(v => v?.replace(/\D/g, "") || null),
+        .nullable(),
+        
 })
 .refine(
     data => data.email || data.cnpj_cpf,
