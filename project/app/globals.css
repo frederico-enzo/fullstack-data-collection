@@ -19,6 +19,9 @@
     --foreground: #ededed;
   }
 }
+.rounded-4 {
+  border-radius: 0.75rem;
+}
 
 body {
   background: var(--background);

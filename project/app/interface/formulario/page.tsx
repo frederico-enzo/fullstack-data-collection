@@ -3,9 +3,10 @@
 import { useState } from "react";
 import StepAtor from "../components/ator/StepAtor";
 import StepTecnologia from "../components/tecnologia/StepTecnologia";
+import StepGeradora from "../components/geradora/StepGeradora";
 
 export default function FormularioPage() {
-    const [step, setStep] = useState<"ator" | "tecnologia">("ator");
+    const [step, setStep] = useState<"ator" | "tecnologia" | "geradora">("ator");
     const [atorId, setAtorId] = useState<string | null>(null);
 
     return (
@@ -15,14 +16,14 @@ export default function FormularioPage() {
                 <StepAtor
                     onNext={(id) => {
                         setAtorId(id);              // salva o ator
-                        setStep("tecnologia");      // avança para o próximo step
+                        setStep("geradora");      // avança para o próximo step
                     }}
                 />
             )}
 
             {/* STEP 2 */}
-            {step === "tecnologia" && atorId && (
-                <StepTecnologia atorId={atorId} />
+            {step === "geradora" && atorId && (
+                <StepGeradora atorId={atorId} />
             )}
         </div>
     );

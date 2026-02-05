@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import AtorForm from "./AtorForm";
 
 interface StepAtorProps {
@@ -8,31 +7,33 @@ interface StepAtorProps {
 }
 
 export default function StepAtor({ onNext }: StepAtorProps) {
-  const [modo, setModo] = useState<"novo" | "existente">("novo");
-
   return (
-    <div className="container mt-5">
+    <div className="container py-5">
       <div
-        className="card shadow-sm mx-auto rounded-3px"
-        style={{ maxWidth: "600px" }}
+        className="card border-0 shadow-sm mx-auto rounded-4"
+        style={{ maxWidth: "640px" }}
       >
-        <div className="card-body p-4">
-          {/* Header */}
-          <h2 className="fw-bold mb-1">Step 1 — Ator</h2>
+        {/* Header */}
+        <div className="card-header bg-white border-0 pb-0 pt-4 px-4">
+          <span className="badge bg-primary-subtle text-primary mb-2">
+            Etapa 1 de 4
+          </span>
 
-          <p className="text-muted mb-4">
-            Cadastre um novo ator ou selecione um existente.
+          <h2 className="fw-bold mb-1">Cadastro do Ator</h2>
+          <p className="text-muted mb-0">
+            Informe quem é o responsável pela unidade geradora.
           </p>
-          {/* Conteúdo */}
-          {modo === "novo" && (
-            <AtorForm
-              onCreated={(ator) => {
-                if (ator?.id) {
-                  onNext(String(ator.id));
-                }
-              }}
-            />
-          )}
+        </div>
+
+        {/* Body */}
+        <div className="card-body px-4 pt-4 pb-5">
+          <AtorForm
+            onCreated={(ator) => {
+              if (ator?.id) {
+                onNext(String(ator.id));
+              }
+            }}
+          />
         </div>
       </div>
     </div>

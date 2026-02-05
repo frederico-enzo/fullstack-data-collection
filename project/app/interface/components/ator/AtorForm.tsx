@@ -109,7 +109,7 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
           ]}
           dispatch={(appended, dynamicMasked) => {
             const value = dynamicMasked.value + appended;
-            return value.length > 11
+            return value.length > 14
               ? dynamicMasked.compiledMasks[1]
               : dynamicMasked.compiledMasks[0];
           }}
