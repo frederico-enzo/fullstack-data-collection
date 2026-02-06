@@ -2,29 +2,49 @@
 
 import { useState } from "react";
 import StepAtor from "../components/ator/StepAtor";
-import StepTecnologia from "../components/tecnologia/StepTecnologia";
 import StepGeradora from "../components/geradora/StepGeradora";
+import StepTecnologia from "../components/tecnologia/StepTec";
 
 export default function FormularioPage() {
-    const [step, setStep] = useState<"ator" | "tecnologia" | "geradora">("ator");
-    const [atorId, setAtorId] = useState<string | null>(null);
+  const [step, setStep] = useState<
+    "ator" | "geradora" | "tecnologia"
+  >("ator");
 
-    return (
-        <div>
-            {/* STEP 1 */}
-            {step === "ator" && (
-                <StepAtor
-                    onNext={(id) => {
-                        setAtorId(id);              // salva o ator
-                        setStep("geradora");      // avança para o próximo step
-                    }}
-                />
-            )}
+  const [atorId, setAtorId] = useState<string | null>(null);
+  const [usinaId, setUsinaId] = useState<string | null>(null);
+  const [tecnologia, setTecnologia] = useState<string | null>(null);
 
-            {/* STEP 2 */}
-            {step === "geradora" && atorId && (
-                <StepGeradora atorId={atorId} />
-            )}
-        </div>
-    );
+  return (
+    <div>
+      {/* STEP 1 — ATOR */}
+      {step === "ator" && (
+        <StepAtor
+          onNext={(id) => {
+            setAtorId(id);
+            setStep("geradora");
+          }}
+        />
+      )}
+
+      {/* STEP 2 — GERADORA */}
+      {step === "geradora" && atorId && (
+        <StepGeradora
+          atorId={atorId}
+          onNext={(uId, tech) => {
+            setUsinaId(uId);
+            setTecnologia(tech);
+            setStep("tecnologia");
+          }}
+        />
+      )}
+
+      {/* STEP 3 — TECNOLOGIA */}
+      {step === "tecnologia" && usinaId && tecnologia && (
+        <StepTecnologia
+          usinaId={usinaId}
+          tecnologia={tecnologia}
+        />
+      )}
+    </div>
+  );
 }
