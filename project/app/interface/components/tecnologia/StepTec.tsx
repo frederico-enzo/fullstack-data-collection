@@ -35,4 +35,4 @@ export default function StepTecn({
       return <div>Tecnologia inválida</div>;
   }
 }
-// ...existing code...
+// ...existing 
