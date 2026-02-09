@@ -78,7 +78,7 @@ export default function Biogas({ usinaId }: BiogasProps) {
         <div className="container py-5">
             <div
                 className="card border-0 shadow-sm mx-auto rounded-4"
-                style={{ maxWidth: "800px" }}
+                style={{ maxWidth: "1000px" }}
             >
                 <div className="card-header bg-white border-0 pt-4 px-4">
                     <span className="badge bg-primary-subtle text-primary mb-2">
@@ -93,51 +93,32 @@ export default function Biogas({ usinaId }: BiogasProps) {
                 <div className="card-body px-4 pt-4 pb-5">
                     <form onSubmit={handleSubmit} className="d-flex flex-column gap-4">
 
-                        {/* Capacidade e geração */}
+
                         <div className="row g-3">
-                            <div className="col-md-6 form-floating">
+
+                            {/* Processo */}
+                            <div className="form-floating col-md-6">
                                 <input
-                                    type="number"
-                                    step="0.01"
                                     className="form-control"
-                                    placeholder="Capacidade instalada"
-                                    value={form.capacidade_instalada_mw}
+                                    placeholder="Tipo de substrato"
+                                    value={form.tipo_substrato}
                                     onChange={(e) =>
-                                        setForm({ ...form, capacidade_instalada_mw: e.target.value })
+                                        setForm({ ...form, tipo_substrato: e.target.value })
                                     }
                                 />
-                                <label>Capacidade instalada (MW)</label>
+                                <label>Tipo de substrato</label>
                             </div>
-
-                            <div className="col-md-6 form-floating">
+                            <div className="form-floating col-md-6">
                                 <input
-                                    type="number"
-                                    step="0.01"
                                     className="form-control"
-                                    placeholder="Energia mensal"
-                                    value={form.energia_gerada_mensal_mwh}
+                                    placeholder="Tipo de biodigestor"
+                                    value={form.tipo_biodigestor}
                                     onChange={(e) =>
-                                        setForm({
-                                            ...form,
-                                            energia_gerada_mensal_mwh: e.target.value,
-                                        })
+                                        setForm({ ...form, tipo_biodigestor: e.target.value })
                                     }
                                 />
-                                <label>Energia gerada mensal (MWh)</label>
+                                <label>Tipo de biodigestor</label>
                             </div>
-                        </div>
-
-                        {/* Processo */}
-                        <div className="form-floating">
-                            <input
-                                className="form-control"
-                                placeholder="Tipo de substrato"
-                                value={form.tipo_substrato}
-                                onChange={(e) =>
-                                    setForm({ ...form, tipo_substrato: e.target.value })
-                                }
-                            />
-                            <label>Tipo de substrato</label>
                         </div>
 
                         <div className="row g-3">
@@ -158,46 +139,17 @@ export default function Biogas({ usinaId }: BiogasProps) {
                                 <label>Quantidade processada (t/dia)</label>
                             </div>
 
-                            <div className="col-md-6 form-floating">
+                            <div className="form-floating col-md-6">
                                 <input
-                                    type="number"
-                                    step="0.01"
                                     className="form-control"
-                                    placeholder="Teor de sólidos"
-                                    value={form.teor_solidos_percent}
+                                    placeholder="Tratamento do biogás"
+                                    value={form.tratamento_biogas}
                                     onChange={(e) =>
-                                        setForm({
-                                            ...form,
-                                            teor_solidos_percent: e.target.value,
-                                        })
+                                        setForm({ ...form, tratamento_biogas: e.target.value })
                                     }
                                 />
-                                <label>Teor de sólidos (%)</label>
+                                <label>Tratamento do biogás</label>
                             </div>
-                        </div>
-
-                        <div className="form-floating">
-                            <input
-                                className="form-control"
-                                placeholder="Tipo de biodigestor"
-                                value={form.tipo_biodigestor}
-                                onChange={(e) =>
-                                    setForm({ ...form, tipo_biodigestor: e.target.value })
-                                }
-                            />
-                            <label>Tipo de biodigestor</label>
-                        </div>
-
-                        <div className="form-floating">
-                            <input
-                                className="form-control"
-                                placeholder="Tratamento do biogás"
-                                value={form.tratamento_biogas}
-                                onChange={(e) =>
-                                    setForm({ ...form, tratamento_biogas: e.target.value })
-                                }
-                            />
-                            <label>Tratamento do biogás</label>
                         </div>
 
                         <div className="form-floating">
@@ -214,7 +166,7 @@ export default function Biogas({ usinaId }: BiogasProps) {
 
                         {/* Eficiências */}
                         <div className="row g-3">
-                            <div className="col-md-6 form-floating">
+                            <div className="col-md-4 form-floating">
                                 <input
                                     type="number"
                                     step="0.01"
@@ -231,7 +183,7 @@ export default function Biogas({ usinaId }: BiogasProps) {
                                 <label>Eficiência elétrica (%)</label>
                             </div>
 
-                            <div className="col-md-6 form-floating">
+                            <div className="col-md-4 form-floating">
                                 <input
                                     type="number"
                                     step="0.01"
@@ -246,6 +198,22 @@ export default function Biogas({ usinaId }: BiogasProps) {
                                     }
                                 />
                                 <label>Eficiência térmica (%)</label>
+                            </div>
+                            <div className="col-md-4 form-floating">
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    className="form-control"
+                                    placeholder="Teor de sólidos"
+                                    value={form.teor_solidos_percent}
+                                    onChange={(e) =>
+                                        setForm({
+                                            ...form,
+                                            teor_solidos_percent: e.target.value,
+                                        })
+                                    }
+                                />
+                                <label>Teor de sólidos (%)</label>
                             </div>
                         </div>
 
@@ -317,24 +285,6 @@ export default function Biogas({ usinaId }: BiogasProps) {
                                 <label>Temperatura média (°C)</label>
                             </div>
                         </div>
-
-                        <div className="form-floating">
-                            <input
-                                type="number"
-                                step="0.01"
-                                className="form-control"
-                                placeholder="Redução de emissões"
-                                value={form.reducao_emissoes_tco2eq_ano}
-                                onChange={(e) =>
-                                    setForm({
-                                        ...form,
-                                        reducao_emissoes_tco2eq_ano: e.target.value,
-                                    })
-                                }
-                            />
-                            <label>Redução de emissões (tCO₂eq/ano)</label>
-                        </div>
-
                         <div className="form-floating">
                             <input
                                 className="form-control"

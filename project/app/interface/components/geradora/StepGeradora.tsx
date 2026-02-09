@@ -97,7 +97,7 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
     <div className="container py-5">
       <div
         className="card border-0 shadow-sm mx-auto rounded-4"
-        style={{ maxWidth: 720 }}
+        style={{ maxWidth: "1000px" }}
       >
         <div className="card-header bg-white border-0 pt-4 px-4">
           <span className="badge bg-primary-subtle text-primary mb-2">

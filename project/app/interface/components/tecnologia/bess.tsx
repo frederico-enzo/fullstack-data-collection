@@ -86,17 +86,13 @@ export default function BESS({ usinaId }: BESSProps) {
     <div className="container py-5">
       <div
         className="card border-0 shadow-sm mx-auto rounded-4"
-        style={{ maxWidth: "900px" }}
+        style={{ maxWidth: "1000px" }}
       >
         <div className="card-header bg-white border-0 pt-4 px-4">
           <span className="badge bg-primary-subtle text-primary mb-2">
             Etapa 3 de 4
           </span>
           <h2 className="fw-bold mb-1">Tecnologia — Armazenamento (BESS)</h2>
-          <p className="text-muted mb-0">
-            Informações técnicas, elétricas e operacionais do sistema de
-            armazenamento.
-          </p>
         </div>
 
         <div className="card-body px-4 pt-4 pb-5">
@@ -104,23 +100,23 @@ export default function BESS({ usinaId }: BESSProps) {
 
             {/* Bateria */}
             <div className="row g-3">
+
               <div className="col-md-4 form-floating">
                 <input
                   type="number"
                   step="0.01"
                   className="form-control"
-                  placeholder="Fator de capacidade"
-                  value={form.fator_capacidade_percent}
+                  placeholder="Temperatura de operação"
+                  value={form.temperatura_operacao_c}
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      fator_capacidade_percent: e.target.value,
+                      temperatura_operacao_c: e.target.value,
                     })
                   }
                 />
-                <label>Fator de capacidade (%)</label>
+                <label>Temperatura de operação (°C)</label>
               </div>
-
               <div className="col-md-4 form-floating">
                 <input
                   className="form-control"
@@ -241,9 +237,23 @@ export default function BESS({ usinaId }: BESSProps) {
               </div>
             </div>
 
+            <div className="form-floating">
+              <input
+                className="form-control"
+                placeholder="Nível de tensão de conexão"
+                value={form.nivel_tensao_conexao}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    nivel_tensao_conexao: e.target.value,
+                  })
+                }
+              />
+              <label>Nível de tensão de conexão</label>
+            </div>
             {/* Operação */}
             <div className="row g-3">
-              <div className="col-md-4 form-floating">
+              <div className="col-md-3 form-floating">
                 <input
                   type="number"
                   className="form-control"
@@ -259,7 +269,7 @@ export default function BESS({ usinaId }: BESSProps) {
                 <label>Vida útil (ciclos)</label>
               </div>
 
-              <div className="col-md-4 form-floating">
+              <div className="col-md-3 form-floating">
                 <input
                   type="number"
                   step="0.01"
@@ -275,117 +285,117 @@ export default function BESS({ usinaId }: BESSProps) {
                 />
                 <label>Tempo de recarga (h)</label>
               </div>
-
-              <div className="col-md-4 form-floating">
+              <div className="col-md-3 form-floating">
                 <input
                   type="number"
                   step="0.01"
                   className="form-control"
-                  placeholder="Temperatura de operação"
-                  value={form.temperatura_operacao_c}
+                  placeholder="Fator de capacidade"
+                  value={form.fator_capacidade_percent}
                   onChange={(e) =>
                     setForm({
                       ...form,
-                      temperatura_operacao_c: e.target.value,
+                      fator_capacidade_percent: e.target.value,
                     })
                   }
                 />
-                <label>Temperatura de operação (°C)</label>
+                <label>Fator de capacidade (%)</label>
+              </div>
+              <div className="form-floating col-md-3">
+                <input
+                  type="number"
+                  step="0.01"
+                  className="form-control"
+                  placeholder="Eficiência de conversão"
+                  value={form.eficiencia_conversao_percent}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      eficiencia_conversao_percent: e.target.value,
+                    })
+                  }
+                />
+                <label>Eficiência de conversão (%)</label>
+              </div>
+            </div>
+            <div className="row g-3">
+              {/* Sistemas */}
+              <div className="form-floating col-md-4">
+                <input
+                  className="form-control"
+                  placeholder="Sistema de gerenciamento (BMS)"
+                  value={form.sistema_gerenciamento_bms}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      sistema_gerenciamento_bms: e.target.value,
+                    })
+                  }
+                />
+                <label>Sistema de gerenciamento (BMS)</label>
+              </div>
+
+              <div className="form-floating col-md-4">
+                <input
+                  className="form-control"
+                  placeholder="Sistema de conversão de potência"
+                  value={form.sistema_conversao_potencia}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      sistema_conversao_potencia: e.target.value,
+                    })
+                  }
+                />
+                <label>Sistema de conversão de potência</label>
+              </div>
+              <div className="form-floating col-md-4">
+                <input
+                  className="form-control"
+                  placeholder="Tipo de conexão"
+                  value={form.tipo_conexao}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      tipo_conexao: e.target.value,
+                    })
+                  }
+                />
+                <label>Tipo de conexão</label>
               </div>
             </div>
 
-            {/* Sistemas */}
-            <div className="form-floating">
-              <input
-                className="form-control"
-                placeholder="Sistema de gerenciamento (BMS)"
-                value={form.sistema_gerenciamento_bms}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    sistema_gerenciamento_bms: e.target.value,
-                  })
-                }
-              />
-              <label>Sistema de gerenciamento (BMS)</label>
-            </div>
+            <div className="row g-3">
+              {/* Conexão */}
+              <div className="form-floating col-md-6">
+                <input
+                  className="form-control"
+                  placeholder="Modalidade de operação"
+                  value={form.modalidade_operacao}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      modalidade_operacao: e.target.value,
+                    })
+                  }
+                />
+                <label>Modalidade de operação</label>
+              </div>
 
-            <div className="form-floating">
-              <input
-                className="form-control"
-                placeholder="Sistema de conversão de potência"
-                value={form.sistema_conversao_potencia}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    sistema_conversao_potencia: e.target.value,
-                  })
-                }
-              />
-              <label>Sistema de conversão de potência</label>
-            </div>
-
-            <div className="form-floating">
-              <input
-                type="number"
-                step="0.01"
-                className="form-control"
-                placeholder="Eficiência de conversão"
-                value={form.eficiencia_conversao_percent}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    eficiencia_conversao_percent: e.target.value,
-                  })
-                }
-              />
-              <label>Eficiência de conversão (%)</label>
-            </div>
-
-            {/* Conexão */}
-            <div className="form-floating">
-              <input
-                className="form-control"
-                placeholder="Modalidade de operação"
-                value={form.modalidade_operacao}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    modalidade_operacao: e.target.value,
-                  })
-                }
-              />
-              <label>Modalidade de operação</label>
-            </div>
-
-            <div className="form-floating">
-              <input
-                className="form-control"
-                placeholder="Tipo de conexão"
-                value={form.tipo_conexao}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    tipo_conexao: e.target.value,
-                  })
-                }
-              />
-              <label>Tipo de conexão</label>
-            </div>
-
-            <div className="form-floating">
-              <input
-                className="form-control"
-                placeholder="Nível de tensão de conexão"
-                value={form.nivel_tensao_conexao}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    nivel_tensao_conexao: e.target.value,
-                  })
-                }
-              />
-              <label>Nível de tensão de conexão</label>
+              <div className="form-floating col-md-6">
+                <input
+                  className="form-control"
+                  placeholder="Nível de tensão de conexão"
+                  value={form.nivel_tensao_conexao}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      nivel_tensao_conexao: e.target.value,
+                    })
+                  }
+                />
+                <label>Nível de tensão de conexão</label>
+              </div>
             </div>
 
             <button
