@@ -2,56 +2,402 @@
 
 import { useState } from "react";
 
-export default function BESS({ usinaId }: { usinaId: string }) {
+interface BESSProps {
+  usinaId: string;
+}
+
+export default function BESS({ usinaId }: BESSProps) {
   const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
-    capacidade_unitaria_kwh: "",
-    quantidade_modulos: "",
+    fator_capacidade_percent: "",
     tecnologia_bateria: "",
     fabricante_bateria: "",
+    quantidade_modulos: "",
+    capacidade_unitaria_kwh: "",
+    tensao_nominal_sistema_v: "",
+    corrente_nominal_a: "",
+    profundidade_descarga_percent: "",
+    vida_util_ciclos: "",
+    tempo_recarga_horas: "",
+    temperatura_operacao_c: "",
+    sistema_gerenciamento_bms: "",
+    sistema_conversao_potencia: "",
+    eficiencia_conversao_percent: "",
+    modalidade_operacao: "",
+    tipo_conexao: "",
+    nivel_tensao_conexao: "",
   });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
 
-    await fetch("/api/tecnologia/bess", {
+    const res = await fetch("/api/tecnologia/bess", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         usina_id: usinaId,
-        capacidade_unitaria_kwh: Number(form.capacidade_unitaria_kwh),
-        quantidade_modulos: Number(form.quantidade_modulos),
-        tecnologia_bateria: form.tecnologia_bateria,
-        fabricante_bateria: form.fabricante_bateria,
+        fator_capacidade_percent:
+          Number(form.fator_capacidade_percent) || null,
+        tecnologia_bateria: form.tecnologia_bateria || null,
+        fabricante_bateria: form.fabricante_bateria || null,
+        quantidade_modulos: Number(form.quantidade_modulos) || null,
+        capacidade_unitaria_kwh:
+          Number(form.capacidade_unitaria_kwh) || null,
+        tensao_nominal_sistema_v:
+          Number(form.tensao_nominal_sistema_v) || null,
+        corrente_nominal_a:
+          Number(form.corrente_nominal_a) || null,
+        profundidade_descarga_percent:
+          Number(form.profundidade_descarga_percent) || null,
+        vida_util_ciclos:
+          Number(form.vida_util_ciclos) || null,
+        tempo_recarga_horas:
+          Number(form.tempo_recarga_horas) || null,
+        temperatura_operacao_c:
+          Number(form.temperatura_operacao_c) || null,
+        sistema_gerenciamento_bms:
+          form.sistema_gerenciamento_bms || null,
+        sistema_conversao_potencia:
+          form.sistema_conversao_potencia || null,
+        eficiencia_conversao_percent:
+          Number(form.eficiencia_conversao_percent) || null,
+        modalidade_operacao:
+          form.modalidade_operacao || null,
+        tipo_conexao:
+          form.tipo_conexao || null,
+        nivel_tensao_conexao:
+          form.nivel_tensao_conexao || null,
       }),
     });
 
+    if (!res.ok) {
+      alert("Erro ao salvar dados do armazenamento (BESS)");
+      setLoading(false);
+      return;
+    }
+
     setLoading(false);
-    alert("BESS cadastrado com sucesso");
+    alert("Armazenamento (BESS) cadastrado com sucesso");
   }
 
   return (
     <div className="container py-5">
-      <h3 className="fw-bold mb-3">Dados do Armazenamento (BESS)</h3>
+      <div
+        className="card border-0 shadow-sm mx-auto rounded-4"
+        style={{ maxWidth: "900px" }}
+      >
+        <div className="card-header bg-white border-0 pt-4 px-4">
+          <span className="badge bg-primary-subtle text-primary mb-2">
+            Etapa 3 de 4
+          </span>
+          <h2 className="fw-bold mb-1">Tecnologia — Armazenamento (BESS)</h2>
+          <p className="text-muted mb-0">
+            Informações técnicas, elétricas e operacionais do sistema de
+            armazenamento.
+          </p>
+        </div>
 
-      <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
-        <input className="form-control" type="number" placeholder="Capacidade unitária (kWh)"
-          onChange={(e) => setForm({ ...form, capacidade_unitaria_kwh: e.target.value })} />
+        <div className="card-body px-4 pt-4 pb-5">
+          <form onSubmit={handleSubmit} className="d-flex flex-column gap-4">
 
-        <input className="form-control" type="number" placeholder="Quantidade de módulos"
-          onChange={(e) => setForm({ ...form, quantidade_modulos: e.target.value })} />
+            {/* Bateria */}
+            <div className="row g-3">
+              <div className="col-md-4 form-floating">
+                <input
+                  type="number"
+                  step="0.01"
+                  className="form-control"
+                  placeholder="Fator de capacidade"
+                  value={form.fator_capacidade_percent}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      fator_capacidade_percent: e.target.value,
+                    })
+                  }
+                />
+                <label>Fator de capacidade (%)</label>
+              </div>
 
-        <input className="form-control" placeholder="Tecnologia da bateria"
-          onChange={(e) => setForm({ ...form, tecnologia_bateria: e.target.value })} />
+              <div className="col-md-4 form-floating">
+                <input
+                  className="form-control"
+                  placeholder="Tecnologia da bateria"
+                  value={form.tecnologia_bateria}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      tecnologia_bateria: e.target.value,
+                    })
+                  }
+                />
+                <label>Tecnologia da bateria</label>
+              </div>
 
-        <input className="form-control" placeholder="Fabricante da bateria"
-          onChange={(e) => setForm({ ...form, fabricante_bateria: e.target.value })} />
+              <div className="col-md-4 form-floating">
+                <input
+                  className="form-control"
+                  placeholder="Fabricante da bateria"
+                  value={form.fabricante_bateria}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      fabricante_bateria: e.target.value,
+                    })
+                  }
+                />
+                <label>Fabricante da bateria</label>
+              </div>
+            </div>
 
-        <button className="btn btn-primary" disabled={loading}>
-          {loading ? "Salvando..." : "Salvar tecnologia"}
-        </button>
-      </form>
+            <div className="row g-3">
+              <div className="col-md-6 form-floating">
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Quantidade de módulos"
+                  value={form.quantidade_modulos}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      quantidade_modulos: e.target.value,
+                    })
+                  }
+                />
+                <label>Quantidade de módulos</label>
+              </div>
+
+              <div className="col-md-6 form-floating">
+                <input
+                  type="number"
+                  step="0.01"
+                  className="form-control"
+                  placeholder="Capacidade unitária"
+                  value={form.capacidade_unitaria_kwh}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      capacidade_unitaria_kwh: e.target.value,
+                    })
+                  }
+                />
+                <label>Capacidade unitária (kWh)</label>
+              </div>
+            </div>
+
+            {/* Elétrico */}
+            <div className="row g-3">
+              <div className="col-md-4 form-floating">
+                <input
+                  type="number"
+                  step="0.01"
+                  className="form-control"
+                  placeholder="Tensão nominal"
+                  value={form.tensao_nominal_sistema_v}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      tensao_nominal_sistema_v: e.target.value,
+                    })
+                  }
+                />
+                <label>Tensão nominal do sistema (V)</label>
+              </div>
+
+              <div className="col-md-4 form-floating">
+                <input
+                  type="number"
+                  step="0.01"
+                  className="form-control"
+                  placeholder="Corrente nominal"
+                  value={form.corrente_nominal_a}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      corrente_nominal_a: e.target.value,
+                    })
+                  }
+                />
+                <label>Corrente nominal (A)</label>
+              </div>
+
+              <div className="col-md-4 form-floating">
+                <input
+                  type="number"
+                  step="0.01"
+                  className="form-control"
+                  placeholder="Profundidade de descarga"
+                  value={form.profundidade_descarga_percent}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      profundidade_descarga_percent: e.target.value,
+                    })
+                  }
+                />
+                <label>Profundidade de descarga (%)</label>
+              </div>
+            </div>
+
+            {/* Operação */}
+            <div className="row g-3">
+              <div className="col-md-4 form-floating">
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Vida útil"
+                  value={form.vida_util_ciclos}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      vida_util_ciclos: e.target.value,
+                    })
+                  }
+                />
+                <label>Vida útil (ciclos)</label>
+              </div>
+
+              <div className="col-md-4 form-floating">
+                <input
+                  type="number"
+                  step="0.01"
+                  className="form-control"
+                  placeholder="Tempo de recarga"
+                  value={form.tempo_recarga_horas}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      tempo_recarga_horas: e.target.value,
+                    })
+                  }
+                />
+                <label>Tempo de recarga (h)</label>
+              </div>
+
+              <div className="col-md-4 form-floating">
+                <input
+                  type="number"
+                  step="0.01"
+                  className="form-control"
+                  placeholder="Temperatura de operação"
+                  value={form.temperatura_operacao_c}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      temperatura_operacao_c: e.target.value,
+                    })
+                  }
+                />
+                <label>Temperatura de operação (°C)</label>
+              </div>
+            </div>
+
+            {/* Sistemas */}
+            <div className="form-floating">
+              <input
+                className="form-control"
+                placeholder="Sistema de gerenciamento (BMS)"
+                value={form.sistema_gerenciamento_bms}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    sistema_gerenciamento_bms: e.target.value,
+                  })
+                }
+              />
+              <label>Sistema de gerenciamento (BMS)</label>
+            </div>
+
+            <div className="form-floating">
+              <input
+                className="form-control"
+                placeholder="Sistema de conversão de potência"
+                value={form.sistema_conversao_potencia}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    sistema_conversao_potencia: e.target.value,
+                  })
+                }
+              />
+              <label>Sistema de conversão de potência</label>
+            </div>
+
+            <div className="form-floating">
+              <input
+                type="number"
+                step="0.01"
+                className="form-control"
+                placeholder="Eficiência de conversão"
+                value={form.eficiencia_conversao_percent}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    eficiencia_conversao_percent: e.target.value,
+                  })
+                }
+              />
+              <label>Eficiência de conversão (%)</label>
+            </div>
+
+            {/* Conexão */}
+            <div className="form-floating">
+              <input
+                className="form-control"
+                placeholder="Modalidade de operação"
+                value={form.modalidade_operacao}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    modalidade_operacao: e.target.value,
+                  })
+                }
+              />
+              <label>Modalidade de operação</label>
+            </div>
+
+            <div className="form-floating">
+              <input
+                className="form-control"
+                placeholder="Tipo de conexão"
+                value={form.tipo_conexao}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    tipo_conexao: e.target.value,
+                  })
+                }
+              />
+              <label>Tipo de conexão</label>
+            </div>
+
+            <div className="form-floating">
+              <input
+                className="form-control"
+                placeholder="Nível de tensão de conexão"
+                value={form.nivel_tensao_conexao}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    nivel_tensao_conexao: e.target.value,
+                  })
+                }
+              />
+              <label>Nível de tensão de conexão</label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="btn btn-primary py-3 fw-semibold mt-3"
+            >
+              {loading ? "Salvando..." : "Continuar"}
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
