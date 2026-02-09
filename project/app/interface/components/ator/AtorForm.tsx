@@ -184,7 +184,7 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
           ? "Usar ator existente"
           : loading
           ? "Salvando..."
-          : "Salvar e continuar"}
+          : "Continuar"}
       </button>
     </form>
   );
