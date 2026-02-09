@@ -355,7 +355,7 @@ export default function Biogas({ usinaId }: BiogasProps) {
                             disabled={loading}
                             className="btn btn-primary py-3 fw-semibold mt-3"
                         >
-                            {loading ? "Salvando..." : "Salvar tecnologia"}
+                            {loading ? "Salvando..." : "Continuar"}
                         </button>
                     </form>
                 </div>
