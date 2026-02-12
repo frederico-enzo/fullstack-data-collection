@@ -205,7 +205,7 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
             </div>
 
             <div className="row g-3">
-              <div className="col-md-6 form-floating">
+              <div className="col-md-4 form-floating">
                 <input
                   type="number"
                   step="0.01"
@@ -222,7 +222,7 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                 <label>Média mensal de energia gerada (MWh)</label>
               </div>
 
-              <div className="col-md-6 form-floating">
+              <div className="col-md-4 form-floating">
                 <input
                   type="number"
                   step="0.01"
@@ -237,9 +237,9 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                   }
                 />
                 <label>Média mensal de volume vendido (MWh)</label>
-              </div>
 
-              <div className="col-md-12 form-floating">
+              </div>
+              <div className="col-md-4 form-floating">
                 <input
                   type="number"
                   step="0.01"
@@ -255,6 +255,7 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                 />
                 <label>Capacidade anual de geração (MWh)</label>
               </div>
+
             </div>
 
             <div className="row g-3">

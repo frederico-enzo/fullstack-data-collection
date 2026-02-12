@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 export const atorSchema = z.object({
+    id: z.coerce.bigint(),
+
     nome: z
         .string()
         .min(3, "Nome deve ter ao menos 3 caracteres")
