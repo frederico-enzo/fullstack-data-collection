@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     const mediaAnual =
       mediaMensal !== null ? mediaMensal * 12 : null;
 
-    const usina = await prisma.usina.create({
+    const usina = await prisma.geradora.create({
       data: {
         tecnologia: body.tecnologia,
         ator_id: BigInt(body.ator_id),

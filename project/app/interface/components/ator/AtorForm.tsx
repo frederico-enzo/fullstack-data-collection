@@ -23,12 +23,9 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
 
   async function fetchAtorByDocumento(value: string) {
     const clean = value.replace(/\D/g, "");
-
     if (clean.length !== 11 && clean.length !== 14) return;
 
-    const res = await fetch(
-      `/api/ator/by-document?cnpj_cpf=${clean}`
-    );
+    const res = await fetch(`/api/ator/by-document?cnpj_cpf=${clean}`);
 
     if (res.status === 204) {
       setFound(false);
@@ -51,22 +48,9 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
     }
   }
 
-  function handleDocumentoChange(value: string) {
-    setForm((prev) => ({ ...prev, cnpj_cpf: value }));
-
-    if (lookupTimeout.current) {
-      clearTimeout(lookupTimeout.current);
-    }
-
-    lookupTimeout.current = setTimeout(() => {
-      fetchAtorByDocumento(value);
-    }, 400);
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // Caso ator já exista
     if (found && existingAtor) {
       onCreated(existingAtor);
       return;
@@ -93,9 +77,12 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
+    <form
+      onSubmit={handleSubmit}
+      className="d-flex flex-column gap-4 p-4 border rounded-4 bg-white shadow-sm"
+    >
       {found && (
-        <div className="alert alert-info py-2">
+        <div className="alert alert-info py-2 px-3 small mb-2">
           Ator já cadastrado. Dados carregados automaticamente.
         </div>
       )}
@@ -117,10 +104,8 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
           onAccept={(value) =>
             setForm((prev) => ({ ...prev, cnpj_cpf: value }))
           }
-          onComplete={(value) => {
-            fetchAtorByDocumento(value);
-          }}
-          className="form-control rounded-3px"
+          onComplete={fetchAtorByDocumento}
+          className="form-control rounded-3 border-secondary-subtle"
           placeholder="CPF ou CNPJ"
           required
         />
@@ -137,7 +122,7 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
           onChange={(e) =>
             setForm((prev) => ({ ...prev, nome: e.target.value }))
           }
-          className="form-control rounded-3px"
+          className="form-control rounded-3 border-secondary-subtle"
           placeholder="Nome"
         />
         <label>Nome *</label>
@@ -152,7 +137,7 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
           onAccept={(value) =>
             setForm((prev) => ({ ...prev, telefone: value }))
           }
-          className="form-control rounded-3px"
+          className="form-control rounded-3 border-secondary-subtle"
           placeholder="Telefone"
         />
         <label>Telefone</label>
@@ -168,7 +153,7 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
           onChange={(e) =>
             setForm((prev) => ({ ...prev, email: e.target.value }))
           }
-          className="form-control rounded-3px"
+          className="form-control rounded-3 border-secondary-subtle"
           placeholder="Email"
         />
         <label>Email *</label>
@@ -178,7 +163,7 @@ export default function AtorForm({ onCreated }: AtorFormProps) {
       <button
         type="submit"
         disabled={loading}
-        className="btn btn-primary py-3 fw-semibold rounded-3px"
+        className="btn btn-primary py-2 fw-semibold rounded-3 shadow-sm"
       >
         {found
           ? "Usar ator existente"

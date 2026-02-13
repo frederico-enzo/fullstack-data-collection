@@ -13,11 +13,9 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
     area_ocupada_m2: "",
     numero_modulos: "",
     tipo_modulo: "",
-    eficiencia_modulos_percent: "",
     potencia_unitaria_modulo_w: "",
     tipo_inversor: "",
     quantidade_inversores: "",
-    eficiencia_media_inversores_percent: "",
     tensao_nominal_sistema_v: "",
     irradiacao_media_kwh_m2_ano: "",
     temperatura_media_operacao_c: "",
@@ -40,15 +38,11 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
         numero_modulos: Number(form.numero_modulos) || null,
         tipo_modulo: form.tipo_modulo || null,
         eficiencia_modulos_percent:
-          Number(form.eficiencia_modulos_percent) || null,
-        potencia_unitaria_modulo_w:
           Number(form.potencia_unitaria_modulo_w) || null,
         tipo_inversor: form.tipo_inversor || null,
         quantidade_inversores:
           Number(form.quantidade_inversores) || null,
         eficiencia_media_inversores_percent:
-          Number(form.eficiencia_media_inversores_percent) || null,
-        tensao_nominal_sistema_v:
           Number(form.tensao_nominal_sistema_v) || null,
         irradiacao_media_kwh_m2_ano:
           Number(form.irradiacao_media_kwh_m2_ano) || null,
@@ -123,32 +117,22 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
 
             <div className="row g-3">
               <div className="col-md-6 form-floating">
-                <input
-                  className="form-control"
-                  placeholder="Tipo de módulo"
+                <select
+                  className="form-select"
                   value={form.tipo_modulo}
                   onChange={(e) =>
                     setForm({ ...form, tipo_modulo: e.target.value })
                   }
-                />
+                >
+                  <option value="">Selecione</option>
+                  <option value="Monocristalino">Monocristalino</option>
+                  <option value="Policristalino">Policristalino</option>
+                  <option value="Filme fino">Filme fino</option>
+                  <option value="Bifacial">Bifacial</option>
+                  <option value="TOPCon">TOPCon</option>
+                  <option value="Outro">Outro</option>
+                </select>
                 <label>Tipo de módulo</label>
-              </div>
-
-              <div className="col-md-6 form-floating">
-                <input
-                  type="number"
-                  step="0.01"
-                  className="form-control"
-                  placeholder="Eficiência dos módulos"
-                  value={form.eficiencia_modulos_percent}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      eficiencia_modulos_percent: e.target.value,
-                    })
-                  }
-                />
-                <label>Eficiência dos módulos (%)</label>
               </div>
             </div>
 
@@ -170,14 +154,21 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
               </div>
 
               <div className="col-md-6 form-floating">
-                <input
-                  className="form-control"
-                  placeholder="Tipo de inversor"
+                <select
+                  className="form-select"
                   value={form.tipo_inversor}
                   onChange={(e) =>
                     setForm({ ...form, tipo_inversor: e.target.value })
                   }
-                />
+                >
+                  <option value="">Selecione</option>
+                  <option value="OFFGRID">Off-grid</option>
+                  <option value="CENTRAL">Central</option>
+                  <option value="MICRO">Microinversor</option>
+                  <option value="STRING">String</option>
+                  <option value="HÍBRIDO">Híbrido</option>
+                  <option value="OUTRO">Outro</option>
+                </select>
                 <label>Tipo de inversor</label>
               </div>
             </div>
@@ -200,22 +191,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 <label>Quantidade de inversores</label>
               </div>
 
-              <div className="col-md-6 form-floating">
-                <input
-                  type="number"
-                  step="0.01"
-                  className="form-control"
-                  placeholder="Eficiência média dos inversores"
-                  value={form.eficiencia_media_inversores_percent}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      eficiencia_media_inversores_percent: e.target.value,
-                    })
-                  }
-                />
-                <label>Eficiência média dos inversores (%)</label>
-              </div>
+
             </div>
 
             {/* Condições elétricas e ambientais */}
@@ -290,9 +266,8 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
               </div>
 
               <div className="col-md-4 form-floating">
-                <input
-                  className="form-control"
-                  placeholder="Orientação dos módulos"
+                <select
+                  className="form-select"
                   value={form.orientacao_modulos}
                   onChange={(e) =>
                     setForm({
@@ -300,9 +275,16 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                       orientacao_modulos: e.target.value,
                     })
                   }
-                />
+                >
+                  <option value="">Selecione</option>
+                  <option value="NORTE">Norte</option>
+                  <option value="SUL">Sul</option>
+                  <option value="LESTE">Leste</option>
+                  <option value="OESTE">Oeste</option>
+                </select>
                 <label>Orientação dos módulos</label>
               </div>
+
             </div>
 
             {/* Uso do solo */}

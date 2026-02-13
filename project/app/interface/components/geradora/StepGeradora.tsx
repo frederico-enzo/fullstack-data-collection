@@ -52,23 +52,18 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
       tipo_comprador: form.tipo_comprador,
       tipo_contrato: form.tipo_contrato,
       ator_id: Number(atorId),
-
       media_energia_gerada_mensal: form.media_energia_gerada_mensal
         ? Number(form.media_energia_gerada_mensal)
         : null,
-
       media_volume_vendido: form.media_volume_vendido
         ? Number(form.media_volume_vendido)
         : null,
-
       capacidade_anual_geracao: form.capacidade_anual_geracao
         ? Number(form.capacidade_anual_geracao)
         : null,
-
       data_inicio_operacao: form.data_inicio_operacao
         ? new Date(form.data_inicio_operacao)
         : null,
-
       data_inicio_coleta: form.data_inicio_coleta
         ? new Date(form.data_inicio_coleta)
         : null,
@@ -89,7 +84,6 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
 
     const usina = await res.json();
     setLoading(false);
-
     onNext(usina.id, usina.tecnologia);
   }
 
@@ -99,21 +93,27 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
         className="card border-0 shadow-sm mx-auto rounded-4"
         style={{ maxWidth: "1000px" }}
       >
-        <div className="card-header bg-white border-0 pt-4 px-4">
-          <span className="badge bg-primary-subtle text-primary mb-2">
+        {/* Header */}
+        <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
+          <span className="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">
             Etapa 2 de 4
           </span>
-          <h2 className="fw-bold mb-1">Dados da Geradora</h2>
-          <p className="text-muted mb-0">Informações gerais da unidade.</p>
+          <h3 className="fw-semibold mb-1">Dados da Geradora</h3>
+          <p className="text-muted small mb-0">
+            Informações gerais da unidade geradora.
+          </p>
         </div>
 
+        {/* Body */}
         <div className="card-body px-4 pt-4 pb-5">
-          <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
-            <div className="row g-3">
-              {/* Tecnologia */}
+          <form onSubmit={handleSubmit} className="d-flex flex-column gap-4">
+
+            {/* Linha 1 */}
+            <div className="row g-4">
+
               <div className="col-md-6 form-floating">
                 <select
-                  className="form-select"
+                  className="form-select rounded-3 border-secondary-subtle"
                   required
                   value={form.tecnologia}
                   onChange={(e) =>
@@ -129,11 +129,10 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                 <label>Tecnologia *</label>
               </div>
 
-              {/* Município */}
               <div className="col-md-6 form-floating">
                 <input
                   type="text"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   list="municipios-list"
                   required
                   placeholder="Município"
@@ -141,11 +140,9 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                   onChange={(e) => {
                     const nome = e.target.value;
                     setMunicipioNome(nome);
-
                     const municipio = municipios.find(
                       (m) => m.nome === nome
                     );
-
                     setForm((p) => ({
                       ...p,
                       municipio_id: municipio ? municipio.id : "",
@@ -159,11 +156,14 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                 </datalist>
                 <label>Município *</label>
               </div>
+            </div>
 
-              {/* Tipo comprador */}
+            {/* Linha 2 */}
+            <div className="row g-4">
+
               <div className="col-md-6 form-floating">
                 <select
-                  className="form-select"
+                  className="form-select rounded-3 border-secondary-subtle"
                   required
                   value={form.tipo_comprador}
                   onChange={(e) =>
@@ -183,10 +183,9 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                 <label>Tipo de comprador *</label>
               </div>
 
-              {/* Tipo contrato */}
               <div className="col-md-6 form-floating">
                 <select
-                  className="form-select"
+                  className="form-select rounded-3 border-secondary-subtle"
                   required
                   value={form.tipo_contrato}
                   onChange={(e) =>
@@ -204,12 +203,14 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
               </div>
             </div>
 
-            <div className="row g-3">
+            {/* Linha 3 */}
+            <div className="row g-4">
+
               <div className="col-md-4 form-floating">
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Média mensal"
                   value={form.media_energia_gerada_mensal}
                   onChange={(e) =>
@@ -219,15 +220,15 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                     }))
                   }
                 />
-                <label>Média mensal de energia gerada (MWh)</label>
+                <label>Média mensal de energia (MWh)</label>
               </div>
 
               <div className="col-md-4 form-floating">
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
-                  placeholder="Média mensal"
+                  className="form-control rounded-3 border-secondary-subtle"
+                  placeholder="Volume vendido"
                   value={form.media_volume_vendido}
                   onChange={(e) =>
                     setForm((p) => ({
@@ -236,14 +237,14 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                     }))
                   }
                 />
-                <label>Média mensal de volume vendido (MWh)</label>
-
+                <label>Média mensal vendida (MWh)</label>
               </div>
+
               <div className="col-md-4 form-floating">
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Capacidade anual"
                   value={form.capacidade_anual_geracao}
                   onChange={(e) =>
@@ -253,16 +254,17 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                     }))
                   }
                 />
-                <label>Capacidade anual de geração (MWh)</label>
+                <label>Capacidade anual (MWh)</label>
               </div>
-
             </div>
 
-            <div className="row g-3">
+            {/* Linha 4 */}
+            <div className="row g-4">
+
               <div className="col-md-6 form-floating">
                 <input
                   type="date"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   value={form.data_inicio_operacao}
                   onChange={(e) =>
                     setForm((p) => ({
@@ -277,7 +279,7 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
               <div className="col-md-6 form-floating">
                 <input
                   type="date"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   value={form.data_inicio_coleta}
                   onChange={(e) =>
                     setForm((p) => ({
@@ -290,13 +292,15 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
               </div>
             </div>
 
+            {/* Botão */}
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary py-3 fw-semibold rounded-3 mt-3"
+              className="btn btn-primary py-3 fw-semibold rounded-3 mt-3 shadow-sm"
             >
               {loading ? "Salvando..." : "Continuar"}
             </button>
+
           </form>
         </div>
       </div>
