@@ -12,10 +12,8 @@ export async function GET() {
   return NextResponse.json(safe);
 }
 
-
 export async function POST(req: Request) {
   const body = await req.json();
-
   const geradora = await prisma.geradora.create({
     data: {
       municipio_id: body.municipio_id,
@@ -25,17 +23,10 @@ export async function POST(req: Request) {
       data_inicio_operacao: body.data_inicio_operacao,
       tipo_comprador: body.tipo_comprador,
       tipo_contrato: body.tipo_contrato,
-
       media_energia_gerada_mensal: body.media_energia_gerada_mensal,
-      media_volume_vendido:
-        body.media_volume_vendido ?? body.media_volume_vendido_mensal ?? null,
-      reducao_co2_ano: body.reducao_co2_ano ?? body.media_reducao_co2_mensal ?? null,
-      capacidade_anual_geracao:
-        body.capacidade_anual_geracao ??
-        body.capacidade_total_geracao ??
-        body.capacidade_total_instalada ??
-        null,
-
+      media_volume_vendido_mensal: body.media_volume_vendido_mensal ?? null,
+      media_reducao_co2_mensal: body.media_reducao_co2_mensal ?? null,
+      capacidade_total_instalada: body.capacidade_total_instalada ?? null,
     },
   });
   return NextResponse.json(
