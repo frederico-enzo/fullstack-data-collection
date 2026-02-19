@@ -7,15 +7,13 @@ export async function POST(req: Request) {
 
     const fotovoltaico = await prisma.fotovoltaico.create({
       data: {
-        usina_id: body.usina_id,
+        geradora_id: body.usina_id,
         area_ocupada_m2: body.area_ocupada_m2,
         numero_modulos: body.numero_modulos,
         tipo_modulo: body.tipo_modulo,
-        eficiencia_modulos_percent: body.eficiencia_modulos_percent,
         potencia_unitaria_modulo_w: body.potencia_unitaria_modulo_w,
         tipo_inversor: body.tipo_inversor,
         quantidade_inversores: body.quantidade_inversores,
-        eficiencia_media_inversores_percent: body.eficiencia_media_inversores_percent,
         tensao_nominal_sistema_v: body.tensao_nominal_sistema_v,
         irradiacao_media_kwh_m2_ano: body.irradiacao_media_kwh_m2_ano,
         temperatura_media_operacao_c: body.temperatura_media_operacao_c,

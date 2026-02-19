@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
     const biogas = await prisma.biogas.create({
       data: {
-        usina_id: body.usina_id,
+        geradora_id: body.usina_id,
         capacidade_instalada_mw: body.capacidade_instalada_mw,
         energia_gerada_mensal_mwh: body.energia_gerada_mensal_mwh,
         energia_gerada_anual_mwh: body.energia_gerada_anual_mwh,

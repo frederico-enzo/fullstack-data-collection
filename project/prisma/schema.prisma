@@ -7,15 +7,155 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//////////////////////////////////////////////////////
-// ENUMS
-//////////////////////////////////////////////////////
+model armazenamento {
+  id                            BigInt    @id @default(autoincrement())
+  geradora_id                   BigInt?   @unique
+  fator_capacidade_percent      Decimal?  @db.Decimal(5, 2)
+  tecnologia_bateria            String?   @db.VarChar
+  fabricante_bateria            String?   @db.VarChar
+  quantidade_modulos            Int?
+  capacidade_unitaria_kwh       Decimal?  @db.Decimal(18, 2)
+  tensao_nominal_sistema_v      Decimal?  @db.Decimal(10, 2)
+  corrente_nominal_a            Decimal?  @db.Decimal(10, 2)
+  profundidade_descarga_percent Decimal?  @db.Decimal(5, 2)
+  vida_util_ciclos              Int?
+  tempo_recarga_horas           Decimal?  @db.Decimal(10, 2)
+  temperatura_operacao_c        Decimal?  @db.Decimal(6, 2)
+  sistema_gerenciamento_bms     String?   @db.VarChar
+  sistema_conversao_potencia    String?   @db.VarChar
+  eficiencia_conversao_percent  Decimal?  @db.Decimal(5, 2)
+  modalidade_operacao           String?   @db.VarChar
+  tipo_conexao                  String?   @db.VarChar
+  nivel_tensao_conexao          String?   @db.VarChar
+  geradora                      geradora? @relation(fields: [geradora_id], references: [id])
+}
 
-enum tecnologia_enum {
-  FOTOVOLTAICA
-  BIOGAS
-  PCH
-  ARMAZENAMENTO
+model ator {
+  id       BigInt     @id @default(autoincrement())
+  nome     String
+  telefone String?
+  email    String?    @unique
+  cnpj_cpf String?    @unique
+  geradora geradora[]
+}
+
+model biogas {
+  id                          BigInt    @id @default(autoincrement())
+  geradora_id                 BigInt?   @unique
+  capacidade_instalada_mw     Decimal?  @db.Decimal(18, 2)
+  energia_gerada_mensal_mwh   Decimal?  @db.Decimal(18, 2)
+  energia_gerada_anual_mwh    Decimal?  @db.Decimal(18, 2)
+  tipo_substrato              String?   @db.VarChar
+  quantidade_processada_t_dia Decimal?  @db.Decimal(18, 2)
+  teor_solidos_percent        Decimal?  @db.Decimal(5, 2)
+  tipo_biodigestor            String?   @db.VarChar
+  tratamento_biogas           String?   @db.VarChar
+  equipamento_conversao       String?   @db.VarChar
+  eficiencia_eletrica_percent Decimal?  @db.Decimal(5, 2)
+  eficiencia_termica_percent  Decimal?  @db.Decimal(5, 2)
+  sistema_queima_excedente    String?   @db.VarChar
+  producao_biogas_nm3_dia     Decimal?  @db.Decimal(18, 2)
+  pressao_media_bar           Decimal?  @db.Decimal(6, 2)
+  temperatura_media_c         Decimal?  @db.Decimal(6, 2)
+  reducao_emissoes_tco2eq_ano Decimal?  @db.Decimal(18, 2)
+  destinacao_digestato        String?   @db.VarChar
+  geradora                    geradora? @relation(fields: [geradora_id], references: [id])
+}
+
+model equipamento {
+  id                   BigInt                 @id @default(autoincrement())
+  tipo_equipamento     String?
+  fabricante           String?
+  modelo               String?
+  potencia_nominal     Decimal?               @db.Decimal(18, 2)
+  eficiencia_percent   Decimal?               @db.Decimal(5, 2)
+  ano_fabricacao       Int?
+  valor                Decimal?               @db.Decimal(18, 2)
+  vida_util_anos       Int?
+  geradora_equipamento geradora_equipamento[]
+}
+
+model fotovoltaico {
+  id                           BigInt    @id @default(autoincrement())
+  geradora_id                  BigInt?   @unique
+  area_ocupada_m2              Decimal?  @db.Decimal(18, 2)
+  numero_modulos               Int?
+  tipo_modulo                  String?   @db.VarChar
+  potencia_unitaria_modulo_w   Int?
+  tipo_inversor                String?   @db.VarChar
+  quantidade_inversores        Int?
+  tensao_nominal_sistema_v     Int?
+  irradiacao_media_kwh_m2_ano  Decimal?  @db.Decimal(18, 2)
+  temperatura_media_operacao_c Decimal?  @db.Decimal(5, 2)
+  inclinacao_graus             Decimal?  @db.Decimal(5, 2)
+  orientacao_modulos           String?   @db.VarChar
+  area_desmatada_ha            Decimal?  @db.Decimal(18, 2)
+  area_reaproveitada_ha        Decimal?  @db.Decimal(18, 2)
+  tipo_conexao                 String?   @db.VarChar
+  fase                         String?   @db.VarChar
+  geradora                     geradora? @relation(fields: [geradora_id], references: [id])
+}
+
+model geradora {
+  id                          BigInt                 @id @default(autoincrement())
+  tecnologia                  tecnologia_enum
+  ator_id                     BigInt
+  municipio_id                BigInt
+  data_inicio_operacao        DateTime?              @db.Timestamp(6)
+  data_inicio_coleta          DateTime?              @db.Timestamp(6)
+  tipo_comprador              comprador_enum
+  tipo_contrato               contrato_enum
+  media_reducao_co2_mensal    String?
+  media_energia_gerada_mensal Decimal?               @db.Decimal(18, 2)
+  media_volume_vendido_mensal Decimal?               @db.Decimal(18, 2)
+  capacidade_total_instalada  Decimal?               @db.Decimal(18, 2)
+  armazenamento               armazenamento?
+  biogas                      biogas?
+  fotovoltaico                fotovoltaico?
+  ator                        ator                   @relation(fields: [ator_id], references: [id])
+  municipio                   municipio              @relation(fields: [municipio_id], references: [id])
+  geradora_equipamento        geradora_equipamento[]
+  pch                         pch?
+}
+
+model geradora_equipamento {
+  geradora_id    BigInt
+  equipamento_id BigInt
+  equipamento    equipamento @relation(fields: [equipamento_id], references: [id], onDelete: Cascade)
+  geradora       geradora    @relation(fields: [geradora_id], references: [id], onDelete: Cascade)
+
+  @@id([geradora_id, equipamento_id])
+}
+
+model municipio {
+  id        BigInt     @id @default(autoincrement())
+  nome      String     @unique
+  latitude  Decimal    @db.Decimal(9, 6)
+  longitude Decimal    @db.Decimal(9, 6)
+  geradora  geradora[]
+}
+
+model pch {
+  id                           BigInt    @id @default(autoincrement())
+  geradora_id                  BigInt?   @unique
+  rio_aproveitado              String?
+  vazao_media_m3s              Decimal?  @db.Decimal(18, 2)
+  vazao_turbinada_m3s          Decimal?  @db.Decimal(18, 2)
+  queda_bruta_m                Decimal?  @db.Decimal(18, 2)
+  queda_liquida_m              Decimal?  @db.Decimal(18, 2)
+  tipo_turbina                 String?
+  numero_turbinas              Int?
+  potencia_unitaria_turbina_mw Decimal?  @db.Decimal(18, 2)
+  rendimento_turbina_percent   Decimal?  @db.Decimal(5, 2)
+  rendimento_gerador_percent   Decimal?  @db.Decimal(5, 2)
+  eficiencia_global_percent    Decimal?  @db.Decimal(5, 2)
+  tipo_gerador                 String?
+  tensao_nominal_sistema_kv    Decimal?  @db.Decimal(10, 2)
+  sistema_regulacao            String?
+  nivel_tensao_conexao         String?
+  subestacao_conexao           String?
+  distribuidora_vinculada      String?
+  geradora                     geradora? @relation(fields: [geradora_id], references: [id])
 }
 
 enum comprador_enum {
@@ -33,169 +173,9 @@ enum contrato_enum {
   VAREJISTAS
 }
 
-//////////////////////////////////////////////////////
-// MODELS
-//////////////////////////////////////////////////////
-
-model armazenamento {
-  id                            BigInt   @id @default(autoincrement())
-  geradora_id                   BigInt?  @unique
-  fator_capacidade_percent      Decimal? @db.Decimal(5, 2)
-  tecnologia_bateria            String?  @db.VarChar
-  fabricante_bateria            String?  @db.VarChar
-  quantidade_modulos            Int?
-  capacidade_unitaria_kwh       Decimal? @db.Decimal(18, 2)
-  tensao_nominal_sistema_v      Decimal? @db.Decimal(10, 2)
-  corrente_nominal_a            Decimal? @db.Decimal(10, 2)
-  profundidade_descarga_percent Decimal? @db.Decimal(5, 2)
-  vida_util_ciclos              Int?
-  tempo_recarga_horas           Decimal? @db.Decimal(10, 2)
-  temperatura_operacao_c        Decimal? @db.Decimal(6, 2)
-  sistema_gerenciamento_bms     String?  @db.VarChar
-  sistema_conversao_potencia    String?  @db.VarChar
-  eficiencia_conversao_percent  Decimal? @db.Decimal(5, 2)
-  modalidade_operacao           String?  @db.VarChar
-  tipo_conexao                  String?  @db.VarChar
-  nivel_tensao_conexao          String?  @db.VarChar
-
-  geradora geradora? @relation(fields: [geradora_id], references: [id])
-}
-
-model biogas {
-  id                          BigInt   @id @default(autoincrement())
-  geradora_id                 BigInt?  @unique
-  capacidade_instalada_mw     Decimal? @db.Decimal(18, 2)
-  energia_gerada_mensal_mwh   Decimal? @db.Decimal(18, 2)
-  energia_gerada_anual_mwh    Decimal? @db.Decimal(18, 2)
-  tipo_substrato              String?  @db.VarChar
-  quantidade_processada_t_dia Decimal? @db.Decimal(18, 2)
-  teor_solidos_percent        Decimal? @db.Decimal(5, 2)
-  tipo_biodigestor            String?  @db.VarChar
-  tratamento_biogas           String?  @db.VarChar
-  equipamento_conversao       String?  @db.VarChar
-  eficiencia_eletrica_percent Decimal? @db.Decimal(5, 2)
-  eficiencia_termica_percent  Decimal? @db.Decimal(5, 2)
-  sistema_queima_excedente    String?  @db.VarChar
-  producao_biogas_nm3_dia     Decimal? @db.Decimal(18, 2)
-  pressao_media_bar           Decimal? @db.Decimal(6, 2)
-  temperatura_media_c         Decimal? @db.Decimal(6, 2)
-  reducao_emissoes_tco2eq_ano Decimal? @db.Decimal(18, 2)
-  destinacao_digestato        String?  @db.VarChar
-
-  geradora geradora? @relation(fields: [geradora_id], references: [id])
-}
-
-model fotovoltaico {
-  id                           BigInt   @id @default(autoincrement())
-  geradora_id                  BigInt?  @unique
-  area_ocupada_m2              Decimal? @db.Decimal(18, 2)
-  numero_modulos               Int?
-  tipo_modulo                  String?  @db.VarChar
-  potencia_unitaria_modulo_w   Int?
-  tipo_inversor                String?  @db.VarChar
-  quantidade_inversores        Int?
-  tensao_nominal_sistema_v     Int?
-  irradiacao_media_kwh_m2_ano  Decimal? @db.Decimal(18, 2)
-  temperatura_media_operacao_c Decimal? @db.Decimal(5, 2)
-  inclinacao_graus             Decimal? @db.Decimal(5, 2)
-  orientacao_modulos           String?  @db.VarChar
-  area_desmatada_ha            Decimal? @db.Decimal(18, 2)
-  area_reaproveitada_ha        Decimal? @db.Decimal(18, 2)
-  tipo_conexao                 String?  @db.VarChar
-  fase                         String?  @db.VarChar
-
-  geradora geradora? @relation(fields: [geradora_id], references: [id])
-}
-
-model pch {
-  id                           BigInt   @id @default(autoincrement())
-  geradora_id                  BigInt?  @unique
-  rio_aproveitado              String?
-  vazao_media_m3s              Decimal? @db.Decimal(18, 2)
-  vazao_turbinada_m3s          Decimal? @db.Decimal(18, 2)
-  queda_bruta_m                Decimal? @db.Decimal(18, 2)
-  queda_liquida_m              Decimal? @db.Decimal(18, 2)
-  tipo_turbina                 String?
-  numero_turbinas              Int?
-  potencia_unitaria_turbina_mw Decimal? @db.Decimal(18, 2)
-  rendimento_turbina_percent   Decimal? @db.Decimal(5, 2)
-  rendimento_gerador_percent   Decimal? @db.Decimal(5, 2)
-  eficiencia_global_percent    Decimal? @db.Decimal(5, 2)
-  tipo_gerador                 String?
-  tensao_nominal_sistema_kv    Decimal? @db.Decimal(10, 2)
-  sistema_regulacao            String?
-  nivel_tensao_conexao         String?
-  subestacao_conexao           String?
-  distribuidora_vinculada      String?
-
-  geradora geradora? @relation(fields: [geradora_id], references: [id])
-}
-
-model ator {
-  id       BigInt  @id @default(autoincrement())
-  nome     String
-  telefone String?
-  email    String? @unique
-  cnpj_cpf String? @unique
-
-  geradoras geradora[]
-}
-
-model municipio {
-  id        BigInt  @id @default(autoincrement())
-  nome      String  @unique
-  latitude  Decimal @db.Decimal(9, 6)
-  longitude Decimal @db.Decimal(9, 6)
-
-  geradoras geradora[]
-}
-
-model equipamento {
-  id                 BigInt   @id @default(autoincrement())
-  tipo_equipamento   String?
-  fabricante         String?
-  modelo             String?
-  potencia_nominal   Decimal? @db.Decimal(18, 2)
-  eficiencia_percent Decimal? @db.Decimal(5, 2)
-  ano_fabricacao     Int?
-  valor              Decimal? @db.Decimal(18, 2)
-  vida_util_anos     Int?
-
-  geradora_equipamentos geradora_equipamento[]
-}
-
-model geradora {
-  id                          BigInt   @id @default(autoincrement())
-  tecnologia                  tecnologia_enum
-  ator_id                     BigInt
-  municipio_id                BigInt
-  data_inicio_operacao        DateTime? @db.Timestamp(6)
-  data_inicio_coleta          DateTime? @db.Timestamp(6)
-  tipo_comprador              comprador_enum
-  tipo_contrato               contrato_enum
-  reducao_co2_ano             String?
-  media_energia_gerada_anual  Decimal? @db.Decimal(18, 2)
-  media_energia_gerada_mensal Decimal? @db.Decimal(18, 2)
-  media_volume_vendido        Decimal? @db.Decimal(18, 2)
-  capacidade_anual_geracao    Decimal? @db.Decimal(18, 2)
-
-  armazenamento armazenamento?
-  biogas        biogas?
-  fotovoltaico  fotovoltaico?
-  pch           pch?
-
-  ator      ator      @relation(fields: [ator_id], references: [id])
-  municipio municipio @relation(fields: [municipio_id], references: [id])
-
-  geradora_equipamentos geradora_equipamento[]
-}
-
-model geradora_equipamento {
-  geradora_id    BigInt
-  equipamento_id BigInt
-
-  geradora    geradora    @relation(fields: [geradora_id], references: [id], onDelete: Cascade)
-  equipamento equipamento @relation(fields: [equipamento_id], references: [id], onDelete: Cascade)
-
-  @@id([geradora_id, equipamento_id])
+enum tecnologia_enum {
+  FOTOVOLTAICA
+  BIOGAS
+  PCH
+  ARMAZENAMENTO
 }

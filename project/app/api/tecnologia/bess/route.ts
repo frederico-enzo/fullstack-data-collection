@@ -7,7 +7,7 @@ export async function POST(req: Request) {
 
     const armazenamento = await prisma.armazenamento.create({
       data: {
-        usina_id: body.usina_id,
+        geradora_id: body.usina_id,
         fator_capacidade_percent: body.fator_capacidade_percent,
         tecnologia_bateria: body.tecnologia_bateria,
         fabricante_bateria: body.fabricante_bateria,
