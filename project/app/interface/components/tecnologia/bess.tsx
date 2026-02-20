@@ -136,9 +136,8 @@ export default function BESS({ usinaId }: BESSProps) {
                 <label>Temperatura de operação (°C)</label>
               </div>
               <div className="col-md-4 form-floating">
-                <input
-                  className="form-control rounded-3 border-secondary-subtle"
-                  placeholder="Tecnologia da bateria"
+                <select
+                  className="form-select rounded-3 border-secondary-subtle"
                   value={form.tecnologia_bateria}
                   onChange={(e) =>
                     setForm({
@@ -146,9 +145,18 @@ export default function BESS({ usinaId }: BESSProps) {
                       tecnologia_bateria: e.target.value,
                     })
                   }
-                />
+                >
+                  <option value="">Selecione</option>
+                  <option value="LI_ION">LI-ION</option>
+                  <option value="LI_PO">LI-PO</option>
+                  <option value="CHUMBO_ACIDO">CHUMBO-ACIDO</option>
+                  <option value="NICD">NICD</option>
+                  <option value="NIMH">NIMH</option>
+                  <option value="SODIO_ION">SODIO-ION</option>
+                  <option value="ESTADO_SOLIDO">ESTADO SOLIDO</option>
+                </select>
                 <label>Tecnologia da bateria</label>
-              </div>
+              </div>  
 
               <div className="col-md-4 form-floating">
                 <input
@@ -354,9 +362,8 @@ export default function BESS({ usinaId }: BESSProps) {
                 <label>Sistema de conversão de potência</label>
               </div>
               <div className="form-floating col-md-4">
-                <input
-                  className="form-control rounded-3 border-secondary-subtle"
-                  placeholder="Tipo de conexão"
+                <select
+                  className="form-select rounded-3 border-secondary-subtle"
                   value={form.tipo_conexao}
                   onChange={(e) =>
                     setForm({
@@ -364,7 +371,12 @@ export default function BESS({ usinaId }: BESSProps) {
                       tipo_conexao: e.target.value,
                     })
                   }
-                />
+                >
+                  <option value="">Selecione</option>
+                  <option value="ON_GRID">ON GRID</option>
+                  <option value="OFF_GRID">OFF GRID</option>
+                  <option value="GRID_HIBRIDO">GRID HIBRIDO</option>
+                </select>
                 <label>Tipo de conexão</label>
               </div>
             </div>
