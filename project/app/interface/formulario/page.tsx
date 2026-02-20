@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import StepAtor from "../components/ator/StepAtor";
+import StepAtor  from "../components/ator/StepAtor";
 import StepGeradora from "../components/geradora/StepGeradora";
 import StepTecnologia from "../components/tecnologia/StepTec";
 
@@ -19,7 +19,7 @@ export default function FormularioPage() {
       {/* STEP 1 — ATOR */}
       {step === "ator" && (
         <StepAtor
-          onNext={(id) => {
+          onAtorSelect={(id) => {
             setAtorId(id);
             setStep("geradora");
           }}

@@ -32,8 +32,6 @@ const parseDateField = (value: unknown, fieldName: string) => {
 
   return parsed;
 };
-
-
 export async function GET() {
   const geradoras = await prisma.geradora.findMany();
   const safe = JSON.parse(
@@ -85,5 +83,5 @@ export async function POST(req: Request) {
       )
     ),
     { status: 201 }
-  )
+  );
 }

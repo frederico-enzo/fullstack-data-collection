@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   });
   return NextResponse.json(
     JSON.parse(
-      JSON.stringify(body, (_, v) =>
+      JSON.stringify(ator, (_, v) =>
         typeof v === "bigint" ? v.toString() : v
       )
     ),
