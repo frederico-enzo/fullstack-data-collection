@@ -1,38 +1,81 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
+import {
+  badRequest,
+  parseOptionalNumber,
+  parseOptionalString,
+  parseRequestBodyObject,
+  parseUsinaId,
+  safeJson,
+} from "../_helpers";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const rawBody = await req.json();
+    const body = parseRequestBodyObject(rawBody);
+    const geradoraId = parseUsinaId(body.usina_id);
 
-    const biogas = await prisma.biogas.create({
-      data: {
-        geradora_id: body.usina_id,
-        capacidade_instalada_mw: body.capacidade_instalada_mw,
-        energia_gerada_mensal_mwh: body.energia_gerada_mensal_mwh,
-        energia_gerada_anual_mwh: body.energia_gerada_anual_mwh,
-        tipo_substrato: body.tipo_substrato,
-        quantidade_processada_t_dia: body.quantidade_processada_t_dia,
-        teor_solidos_percent: body.teor_solidos_percent,
-        tipo_biodigestor: body.tipo_biodigestor,
-        tratamento_biogas: body.tratamento_biogas,
-        equipamento_conversao: body.equipamento_conversao,
-        eficiencia_eletrica_percent: body.eficiencia_eletrica_percent,
-        eficiencia_termica_percent: body.eficiencia_termica_percent,
-        sistema_queima_excedente: body.sistema_queima_excedente,
-        producao_biogas_nm3_dia: body.producao_biogas_nm3_dia,
-        pressao_media_bar: body.pressao_media_bar,
-        temperatura_media_c: body.temperatura_media_c,
-        reducao_emissoes_tco2eq_ano: body.reducao_emissoes_tco2eq_ano,
-        destinacao_digestato: body.destinacao_digestato,
+    const data = {
+      tipo_substrato: parseOptionalString(body.tipo_substrato),
+      quantidade_processada_t_dia: parseOptionalNumber(
+        body.quantidade_processada_t_dia,
+        "quantidade_processada_t_dia"
+      ),
+      teor_solidos_percent: parseOptionalNumber(
+        body.teor_solidos_percent,
+        "teor_solidos_percent"
+      ),
+      tipo_biodigestor: parseOptionalString(body.tipo_biodigestor),
+      tratamento_biogas: parseOptionalString(body.tratamento_biogas),
+      equipamento_conversao: parseOptionalString(body.equipamento_conversao),
+      eficiencia_eletrica_percent: parseOptionalNumber(
+        body.eficiencia_eletrica_percent,
+        "eficiencia_eletrica_percent"
+      ),
+      eficiencia_termica_percent: parseOptionalNumber(
+        body.eficiencia_termica_percent,
+        "eficiencia_termica_percent"
+      ),
+      sistema_queima_excedente: parseOptionalString(
+        body.sistema_queima_excedente
+      ),
+      producao_biogas_nm3_dia: parseOptionalNumber(
+        body.producao_biogas_nm3_dia,
+        "producao_biogas_nm3_dia"
+      ),
+      pressao_media_bar: parseOptionalNumber(
+        body.pressao_media_bar,
+        "pressao_media_bar"
+      ),
+      temperatura_media_c: parseOptionalNumber(
+        body.temperatura_media_c,
+        "temperatura_media_c"
+      ),
+      destinacao_digestato: parseOptionalString(body.destinacao_digestato),
+    };
+
+    const biogas = await prisma.biogas.upsert({
+      where: { geradora_id: geradoraId },
+      update: data,
+      create: {
+        geradora_id: geradoraId,
+        ...data,
       },
     });
 
-    return NextResponse.json(biogas);
+    return NextResponse.json(safeJson(biogas), { status: 201 });
   } catch (error) {
-    console.error("Error creating biogas:", error);
+    if (
+      error instanceof SyntaxError ||
+      (error instanceof Error && error.message.includes("Campo")) ||
+      (error instanceof Error && error.message.includes("Payload"))
+    ) {
+      return badRequest(error);
+    }
+
+    console.error("Error creating/updating biogas:", error);
     return NextResponse.json(
-      { error: "Failed to create biogas" },
+      { error: "Failed to create/update biogas" },
       { status: 500 }
     );
   }

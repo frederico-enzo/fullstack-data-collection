@@ -29,57 +29,70 @@ export default function BESS({ usinaId }: BESSProps) {
     nivel_tensao_conexao: "",
   });
 
+  const toNumberOrNull = (value: string) =>
+    value === "" ? null : Number(value);
+
+  const toStringOrNull = (value: string) => {
+    const trimmed = value.trim();
+    return trimmed === "" ? null : trimmed;
+  };
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
 
-    const res = await fetch("/api/tecnologia/bess", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        usina_id: usinaId,
-        fator_capacidade_percent:
-          Number(form.fator_capacidade_percent) || null,
-        tecnologia_bateria: form.tecnologia_bateria || null,
-        fabricante_bateria: form.fabricante_bateria || null,
-        quantidade_modulos: Number(form.quantidade_modulos) || null,
-        capacidade_unitaria_kwh:
-          Number(form.capacidade_unitaria_kwh) || null,
-        tensao_nominal_sistema_v:
-          Number(form.tensao_nominal_sistema_v) || null,
-        corrente_nominal_a:
-          Number(form.corrente_nominal_a) || null,
-        profundidade_descarga_percent:
-          Number(form.profundidade_descarga_percent) || null,
-        vida_util_ciclos:
-          Number(form.vida_util_ciclos) || null,
-        tempo_recarga_horas:
-          Number(form.tempo_recarga_horas) || null,
-        temperatura_operacao_c:
-          Number(form.temperatura_operacao_c) || null,
-        sistema_gerenciamento_bms:
-          form.sistema_gerenciamento_bms || null,
-        sistema_conversao_potencia:
-          form.sistema_conversao_potencia || null,
-        eficiencia_conversao_percent:
-          Number(form.eficiencia_conversao_percent) || null,
-        modalidade_operacao:
-          form.modalidade_operacao || null,
-        tipo_conexao:
-          form.tipo_conexao || null,
-        nivel_tensao_conexao:
-          form.nivel_tensao_conexao || null,
-      }),
-    });
+    try {
+      const res = await fetch("/api/tecnologia/bess", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usina_id: usinaId,
+          fator_capacidade_percent: toNumberOrNull(
+            form.fator_capacidade_percent
+          ),
+          tecnologia_bateria: toStringOrNull(form.tecnologia_bateria),
+          fabricante_bateria: toStringOrNull(form.fabricante_bateria),
+          quantidade_modulos: toNumberOrNull(form.quantidade_modulos),
+          capacidade_unitaria_kwh: toNumberOrNull(
+            form.capacidade_unitaria_kwh
+          ),
+          tensao_nominal_sistema_v: toNumberOrNull(
+            form.tensao_nominal_sistema_v
+          ),
+          corrente_nominal_a: toNumberOrNull(form.corrente_nominal_a),
+          profundidade_descarga_percent: toNumberOrNull(
+            form.profundidade_descarga_percent
+          ),
+          vida_util_ciclos: toNumberOrNull(form.vida_util_ciclos),
+          tempo_recarga_horas: toNumberOrNull(form.tempo_recarga_horas),
+          temperatura_operacao_c: toNumberOrNull(
+            form.temperatura_operacao_c
+          ),
+          sistema_gerenciamento_bms: toStringOrNull(
+            form.sistema_gerenciamento_bms
+          ),
+          sistema_conversao_potencia: toStringOrNull(
+            form.sistema_conversao_potencia
+          ),
+          eficiencia_conversao_percent: toNumberOrNull(
+            form.eficiencia_conversao_percent
+          ),
+          modalidade_operacao: toStringOrNull(form.modalidade_operacao),
+          tipo_conexao: toStringOrNull(form.tipo_conexao),
+          nivel_tensao_conexao: toStringOrNull(form.nivel_tensao_conexao),
+        }),
+      });
 
-    if (!res.ok) {
+      if (!res.ok) {
+        throw new Error();
+      }
+
+      alert("Armazenamento (BESS) cadastrado com sucesso");
+    } catch {
       alert("Erro ao salvar dados do armazenamento (BESS)");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setLoading(false);
-    alert("Armazenamento (BESS) cadastrado com sucesso");
   }
 
   return (
@@ -88,15 +101,20 @@ export default function BESS({ usinaId }: BESSProps) {
         className="card border-0 shadow-sm mx-auto rounded-4"
         style={{ maxWidth: "1000px" }}
       >
-        <div className="card-header bg-white border-0 pt-4 px-4">
+        <div className="card-header bg-white border-0 pb-0 pt-4 px-4">
           <span className="badge bg-primary-subtle text-primary mb-2">
             Etapa 3 de 4
           </span>
           <h2 className="fw-bold mb-1">Tecnologia — Armazenamento (BESS)</h2>
+          <p className="text-muted mb-0">
+            Informações de bateria, eletrônica de potência e operação.
+          </p>
         </div>
 
-        <div className="card-body px-4 pt-4 pb-5">
-          <form onSubmit={handleSubmit} className="d-flex flex-column gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="d-flex flex-column gap-4 p-4 border rounded-4 bg-white shadow-sm"
+        >
 
             {/* Bateria */}
             <div className="row g-3">
@@ -105,7 +123,7 @@ export default function BESS({ usinaId }: BESSProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Temperatura de operação"
                   value={form.temperatura_operacao_c}
                   onChange={(e) =>
@@ -119,7 +137,7 @@ export default function BESS({ usinaId }: BESSProps) {
               </div>
               <div className="col-md-4 form-floating">
                 <input
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Tecnologia da bateria"
                   value={form.tecnologia_bateria}
                   onChange={(e) =>
@@ -134,7 +152,7 @@ export default function BESS({ usinaId }: BESSProps) {
 
               <div className="col-md-4 form-floating">
                 <input
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Fabricante da bateria"
                   value={form.fabricante_bateria}
                   onChange={(e) =>
@@ -152,7 +170,7 @@ export default function BESS({ usinaId }: BESSProps) {
               <div className="col-md-6 form-floating">
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Quantidade de módulos"
                   value={form.quantidade_modulos}
                   onChange={(e) =>
@@ -169,7 +187,7 @@ export default function BESS({ usinaId }: BESSProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Capacidade unitária"
                   value={form.capacidade_unitaria_kwh}
                   onChange={(e) =>
@@ -189,7 +207,7 @@ export default function BESS({ usinaId }: BESSProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Tensão nominal"
                   value={form.tensao_nominal_sistema_v}
                   onChange={(e) =>
@@ -206,7 +224,7 @@ export default function BESS({ usinaId }: BESSProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Corrente nominal"
                   value={form.corrente_nominal_a}
                   onChange={(e) =>
@@ -223,7 +241,7 @@ export default function BESS({ usinaId }: BESSProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Profundidade de descarga"
                   value={form.profundidade_descarga_percent}
                   onChange={(e) =>
@@ -237,26 +255,12 @@ export default function BESS({ usinaId }: BESSProps) {
               </div>
             </div>
 
-            <div className="form-floating">
-              <input
-                className="form-control"
-                placeholder="Nível de tensão de conexão"
-                value={form.nivel_tensao_conexao}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    nivel_tensao_conexao: e.target.value,
-                  })
-                }
-              />
-              <label>Nível de tensão de conexão</label>
-            </div>
             {/* Operação */}
             <div className="row g-3">
               <div className="col-md-3 form-floating">
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Vida útil"
                   value={form.vida_util_ciclos}
                   onChange={(e) =>
@@ -273,7 +277,7 @@ export default function BESS({ usinaId }: BESSProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Tempo de recarga"
                   value={form.tempo_recarga_horas}
                   onChange={(e) =>
@@ -289,7 +293,7 @@ export default function BESS({ usinaId }: BESSProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Fator de capacidade"
                   value={form.fator_capacidade_percent}
                   onChange={(e) =>
@@ -305,7 +309,7 @@ export default function BESS({ usinaId }: BESSProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Eficiência de conversão"
                   value={form.eficiencia_conversao_percent}
                   onChange={(e) =>
@@ -322,7 +326,7 @@ export default function BESS({ usinaId }: BESSProps) {
               {/* Sistemas */}
               <div className="form-floating col-md-4">
                 <input
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Sistema de gerenciamento (BMS)"
                   value={form.sistema_gerenciamento_bms}
                   onChange={(e) =>
@@ -337,7 +341,7 @@ export default function BESS({ usinaId }: BESSProps) {
 
               <div className="form-floating col-md-4">
                 <input
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Sistema de conversão de potência"
                   value={form.sistema_conversao_potencia}
                   onChange={(e) =>
@@ -351,7 +355,7 @@ export default function BESS({ usinaId }: BESSProps) {
               </div>
               <div className="form-floating col-md-4">
                 <input
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Tipo de conexão"
                   value={form.tipo_conexao}
                   onChange={(e) =>
@@ -369,7 +373,7 @@ export default function BESS({ usinaId }: BESSProps) {
               {/* Conexão */}
               <div className="form-floating col-md-6">
                 <input
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Modalidade de operação"
                   value={form.modalidade_operacao}
                   onChange={(e) =>
@@ -384,7 +388,7 @@ export default function BESS({ usinaId }: BESSProps) {
 
               <div className="form-floating col-md-6">
                 <input
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Nível de tensão de conexão"
                   value={form.nivel_tensao_conexao}
                   onChange={(e) =>
@@ -401,12 +405,11 @@ export default function BESS({ usinaId }: BESSProps) {
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary py-3 fw-semibold mt-3"
+              className="btn btn-primary py-2 fw-semibold rounded-3 shadow-sm"
             >
               {loading ? "Salvando..." : "Continuar"}
             </button>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
   );

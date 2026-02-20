@@ -26,6 +26,31 @@ type PchFormState = {
   distribuidora_vinculada: string;
 };
 
+const hidrologiaCampos: Array<[keyof PchFormState, string]> = [
+  ["vazao_media_m3s", "Vazão média (m³/s)"],
+  ["vazao_turbinada_m3s", "Vazão turbinada (m³/s)"],
+  ["queda_bruta_m", "Queda bruta (m)"],
+  ["queda_liquida_m", "Queda líquida (m)"],
+];
+
+const turbinaCampos: Array<[keyof PchFormState, string]> = [
+  ["numero_turbinas", "Número de turbinas"],
+  ["potencia_unitaria_turbina_mw", "Potência unitária (MW)"],
+  ["tipo_gerador", "Tipo de gerador"],
+];
+
+const rendimentoCampos: Array<[keyof PchFormState, string]> = [
+  ["rendimento_turbina_percent", "Rendimento turbina (%)"],
+  ["rendimento_gerador_percent", "Rendimento gerador (%)"],
+  ["eficiencia_global_percent", "Eficiência global (%)"],
+];
+
+const conexaoCampos: Array<[keyof PchFormState, string]> = [
+  ["nivel_tensao_conexao", "Nível de tensão de conexão"],
+  ["subestacao_conexao", "Subestação de conexão"],
+  ["distribuidora_vinculada", "Distribuidora vinculada"],
+];
+
 export default function PCH({ usinaId }: PCHProps) {
   const [loading, setLoading] = useState(false);
 
@@ -109,46 +134,46 @@ export default function PCH({ usinaId }: PCHProps) {
   return (
     <div className="container py-5">
       <div className="card border-0 shadow-sm mx-auto rounded-4" style={{ maxWidth: 1000 }}>
-        <div className="card-header bg-white border-0 pt-4 px-4">
+        <div className="card-header bg-white border-0 pb-0 pt-4 px-4">
           <span className="badge bg-primary-subtle text-primary mb-2">
             Etapa 3 de 4
           </span>
           <h2 className="fw-bold mb-1">Tecnologia — PCH</h2>
+          <p className="text-muted mb-0">
+            Informações hidrológicas, eletromecânicas e de conexão.
+          </p>
         </div>
 
-        <div className="card-body px-4 pt-4 pb-5">
-          <form onSubmit={handleSubmit} className="d-flex flex-column gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="d-flex flex-column gap-4 p-4 border rounded-4 bg-white shadow-sm"
+        >
 
             {/* Hidrologia */}
             <div className="row g-3">
               <div className="form-floating col-md-6">
-                <input className="form-control" value={form.rio_aproveitado}
+                <input className="form-control rounded-3 border-secondary-subtle" value={form.rio_aproveitado}
                   onChange={(e) => setForm({ ...form, rio_aproveitado: e.target.value })} />
                 <label>Rio aproveitado</label>
               </div>
 
               <div className="form-floating col-md-6">
-                <input className="form-control" value={form.tipo_turbina}
+                <input className="form-control rounded-3 border-secondary-subtle" value={form.tipo_turbina}
                   onChange={(e) => setForm({ ...form, tipo_turbina: e.target.value })} />
                 <label>Tipo de turbina</label>
               </div>
             </div>
 
             <div className="row g-3">
-              {[
-                ["vazao_media_m3s", "Vazão média (m³/s)"],
-                ["vazao_turbinada_m3s", "Vazão turbinada (m³/s)"],
-                ["queda_bruta_m", "Queda bruta (m)"],
-                ["queda_liquida_m", "Queda líquida (m)"],
-              ].map(([key, label]) => (
+              {hidrologiaCampos.map(([key, label]) => (
                 <div key={key} className="col-md-3 form-floating">
                   <input
                     type="number"
                     step="0.01"
-                    className="form-control"
-                    value={(form as any)[key]}
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form[key]}
                     onChange={(e) =>
-                      setForm({ ...form, [key]: e.target.value } as PchFormState)
+                      setForm({ ...form, [key]: e.target.value })
                     }
                   />
                   <label>{label}</label>
@@ -158,17 +183,13 @@ export default function PCH({ usinaId }: PCHProps) {
 
             {/* Turbinas */}
             <div className="row g-3">
-              {[
-                ["numero_turbinas", "Número de turbinas"],
-                ["potencia_unitaria_turbina_mw", "Potência unitária (MW)"],
-                ["tipo_gerador", "Tipo de gerador"],
-              ].map(([key, label]) => (
+              {turbinaCampos.map(([key, label]) => (
                 <div key={key} className="col-md-4 form-floating">
                   <input
-                    className="form-control"
-                    value={(form as any)[key]}
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form[key]}
                     onChange={(e) =>
-                      setForm({ ...form, [key]: e.target.value } as PchFormState)
+                      setForm({ ...form, [key]: e.target.value })
                     }
                   />
                   <label>{label}</label>
@@ -178,19 +199,15 @@ export default function PCH({ usinaId }: PCHProps) {
 
             {/* Rendimentos */}
             <div className="row g-3">
-              {[
-                ["rendimento_turbina_percent", "Rendimento turbina (%)"],
-                ["rendimento_gerador_percent", "Rendimento gerador (%)"],
-                ["eficiencia_global_percent", "Eficiência global (%)"],
-              ].map(([key, label]) => (
+              {rendimentoCampos.map(([key, label]) => (
                 <div key={key} className="col-md-4 form-floating">
                   <input
                     type="number"
                     step="0.01"
-                    className="form-control"
-                    value={(form as any)[key]}
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form[key]}
                     onChange={(e) =>
-                      setForm({ ...form, [key]: e.target.value } as PchFormState)
+                      setForm({ ...form, [key]: e.target.value })
                     }
                   />
                   <label>{label}</label>
@@ -204,7 +221,7 @@ export default function PCH({ usinaId }: PCHProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   value={form.tensao_nominal_sistema_kv}
                   onChange={(e) =>
                     setForm({ ...form, tensao_nominal_sistema_kv: e.target.value })
@@ -215,7 +232,7 @@ export default function PCH({ usinaId }: PCHProps) {
 
               <div className="col-md-6 form-floating">
                 <input
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   value={form.sistema_regulacao}
                   onChange={(e) =>
                     setForm({ ...form, sistema_regulacao: e.target.value })
@@ -226,17 +243,13 @@ export default function PCH({ usinaId }: PCHProps) {
             </div>
 
             <div className="row g-3">
-              {[
-                ["nivel_tensao_conexao", "Nível de tensão de conexão"],
-                ["subestacao_conexao", "Subestação de conexão"],
-                ["distribuidora_vinculada", "Distribuidora vinculada"],
-              ].map(([key, label]) => (
+              {conexaoCampos.map(([key, label]) => (
                 <div key={key} className="col-md-4 form-floating">
                   <input
-                    className="form-control"
-                    value={(form as any)[key]}
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form[key]}
                     onChange={(e) =>
-                      setForm({ ...form, [key]: e.target.value } as PchFormState)
+                      setForm({ ...form, [key]: e.target.value })
                     }
                   />
                   <label>{label}</label>
@@ -247,12 +260,11 @@ export default function PCH({ usinaId }: PCHProps) {
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary py-3 fw-semibold mt-3"
+              className="btn btn-primary py-2 fw-semibold rounded-3 shadow-sm"
             >
               {loading ? "Salvando..." : "Continuar"}
             </button>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
   );

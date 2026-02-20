@@ -22,11 +22,12 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
     municipio_id: "",
     tipo_comprador: "",
     tipo_contrato: "",
-    media_energia_gerada_mensal: "",
-    media_volume_vendido: "",
-    capacidade_anual_geracao: "",
     data_inicio_operacao: "",
     data_inicio_coleta: "",
+    media_energia_gerada_mensal: "",
+    media_volume_vendido_mensal: "",
+    media_reducao_co2_mensal: "",
+    capacidade_total_instalada: ""
   });
 
   useEffect(() => {
@@ -55,11 +56,14 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
       media_energia_gerada_mensal: form.media_energia_gerada_mensal
         ? Number(form.media_energia_gerada_mensal)
         : null,
-      media_volume_vendido: form.media_volume_vendido
-        ? Number(form.media_volume_vendido)
+      media_volume_vendido_mensal: form.media_volume_vendido_mensal
+        ? Number(form.media_volume_vendido_mensal)
         : null,
-      capacidade_anual_geracao: form.capacidade_anual_geracao
-        ? Number(form.capacidade_anual_geracao)
+      media_reducao_co2_mensal: form.media_reducao_co2_mensal
+        ? Number(form.media_reducao_co2_mensal)
+        : null,
+      capacidade_total_instalada: form.capacidade_total_instalada
+        ? Number(form.capacidade_total_instalada)
         : null,
       data_inicio_operacao: form.data_inicio_operacao
         ? new Date(form.data_inicio_operacao)
@@ -94,215 +98,211 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
         style={{ maxWidth: "1000px" }}
       >
         {/* Header */}
-        <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
-          <span className="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">
+        <div className="card-header bg-white border-0 pb-0 pt-4 px-4">
+          <span className="badge bg-primary-subtle text-primary mb-2">
             Etapa 2 de 4
           </span>
-          <h3 className="fw-semibold mb-1">Dados da Geradora</h3>
-          <p className="text-muted small mb-0">
+          <h2 className="fw-bold mb-1">Dados da Geradora</h2>
+          <p className="text-muted mb-0">
             Informações gerais da unidade geradora.
           </p>
         </div>
 
-        {/* Body */}
-        <div className="card-body px-4 pt-4 pb-5">
-          <form onSubmit={handleSubmit} className="d-flex flex-column gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="d-flex flex-column gap-4 p-4 border rounded-4 bg-white shadow-sm"
+        >
 
-            {/* Linha 1 */}
-            <div className="row g-4">
+          {/* Linha 1 */}
+          <div className="row g-4">
 
-              <div className="col-md-6 form-floating">
-                <select
-                  className="form-select rounded-3 border-secondary-subtle"
-                  required
-                  value={form.tecnologia}
-                  onChange={(e) =>
-                    setForm((p) => ({ ...p, tecnologia: e.target.value }))
-                  }
-                >
-                  <option value="">Selecione</option>
-                  <option value="FOTOVOLTAICA">Fotovoltaica</option>
-                  <option value="BIOGAS">Biogás</option>
-                  <option value="PCH">PCH</option>
-                  <option value="ARMAZENAMENTO">Armazenamento</option>
-                </select>
-                <label>Tecnologia *</label>
-              </div>
-
-              <div className="col-md-6 form-floating">
-                <input
-                  type="text"
-                  className="form-control rounded-3 border-secondary-subtle"
-                  list="municipios-list"
-                  required
-                  placeholder="Município"
-                  value={municipioNome}
-                  onChange={(e) => {
-                    const nome = e.target.value;
-                    setMunicipioNome(nome);
-                    const municipio = municipios.find(
-                      (m) => m.nome === nome
-                    );
-                    setForm((p) => ({
-                      ...p,
-                      municipio_id: municipio ? municipio.id : "",
-                    }));
-                  }}
-                />
-                <datalist id="municipios-list">
-                  {municipios.map((m) => (
-                    <option key={m.id} value={m.nome} />
-                  ))}
-                </datalist>
-                <label>Município *</label>
-              </div>
+            <div className="col-md-6 form-floating">
+              <select
+                className="form-select rounded-3 border-secondary-subtle"
+                required
+                value={form.tecnologia}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, tecnologia: e.target.value }))
+                }
+              >
+                <option value="">Selecione</option>
+                <option value="FOTOVOLTAICA">Fotovoltaica</option>
+                <option value="BIOGAS">Biogás</option>
+                <option value="PCH">PCH</option>
+                <option value="ARMAZENAMENTO">Armazenamento</option>
+              </select>
+              <label>Tecnologia *</label>
             </div>
 
-            {/* Linha 2 */}
-            <div className="row g-4">
+            <div className="col-md-6 form-floating">
+              <input
+                type="text"
+                className="form-control rounded-3 border-secondary-subtle"
+                list="municipios-list"
+                required
+                placeholder="Município"
+                value={municipioNome}
+                onChange={(e) => {
+                  const nome = e.target.value;
+                  setMunicipioNome(nome);
+                  const municipio = municipios.find((m) => m.nome === nome);
+                  setForm((p) => ({
+                    ...p,
+                    municipio_id: municipio ? municipio.id : "",
+                  }));
+                }}
+              />
+              <datalist id="municipios-list">
+                {municipios.map((m) => (
+                  <option key={m.id} value={m.nome} />
+                ))}
+              </datalist>
+              <label>Município *</label>
+            </div>
+          </div>
 
-              <div className="col-md-6 form-floating">
-                <select
-                  className="form-select rounded-3 border-secondary-subtle"
-                  required
-                  value={form.tipo_comprador}
-                  onChange={(e) =>
-                    setForm((p) => ({ ...p, tipo_comprador: e.target.value }))
-                  }
-                >
-                  <option value="">Selecione</option>
-                  <option value="COMERCIALIZADORAS">Comercializadoras</option>
-                  <option value="AGREGADORES">Agregadores</option>
-                  <option value="CENTRAIS_COMPENSACAO">
-                    Centrais de compensação
-                  </option>
-                  <option value="COMERCIALIZADORAS_VAREJISTAS">
-                    Varejistas
-                  </option>
-                </select>
-                <label>Tipo de comprador *</label>
-              </div>
+          {/* Linha 2 */}
+          <div className="row g-4">
 
-              <div className="col-md-6 form-floating">
-                <select
-                  className="form-select rounded-3 border-secondary-subtle"
-                  required
-                  value={form.tipo_contrato}
-                  onChange={(e) =>
-                    setForm((p) => ({ ...p, tipo_contrato: e.target.value }))
-                  }
-                >
-                  <option value="">Selecione</option>
-                  <option value="CCEAL">CCEAL</option>
-                  <option value="ACR">ACR</option>
-                  <option value="GD">GD</option>
-                  <option value="BATERIAS">Baterias</option>
-                  <option value="VAREJISTAS">Varejistas</option>
-                </select>
-                <label>Tipo de contrato *</label>
-              </div>
+            <div className="col-md-6 form-floating">
+              <select
+                className="form-select rounded-3 border-secondary-subtle"
+                required
+                value={form.tipo_comprador}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, tipo_comprador: e.target.value }))
+                }
+              >
+                <option value="">Selecione</option>
+                <option value="COMERCIALIZADORAS">Comercializadoras</option>
+                <option value="AGREGADORES">Agregadores</option>
+                <option value="CENTRAIS_COMPENSACAO">
+                  Centrais de compensação
+                </option>
+                <option value="COMERCIALIZADORAS_VAREJISTAS">Varejistas</option>
+              </select>
+              <label>Tipo de comprador *</label>
             </div>
 
-            {/* Linha 3 */}
-            <div className="row g-4">
+            <div className="col-md-6 form-floating">
+              <select
+                className="form-select rounded-3 border-secondary-subtle"
+                required
+                value={form.tipo_contrato}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, tipo_contrato: e.target.value }))
+                }
+              >
+                <option value="">Selecione</option>
+                <option value="CCEAL">CCEAL</option>
+                <option value="ACR">ACR</option>
+                <option value="GD">GD</option>
+                <option value="BATERIAS">Baterias</option>
+                <option value="VAREJISTAS">Varejistas</option>
+              </select>
+              <label>Tipo de contrato *</label>
+            </div>
+          </div>
 
-              <div className="col-md-4 form-floating">
-                <input
-                  type="number"
-                  step="0.01"
-                  className="form-control rounded-3 border-secondary-subtle"
-                  placeholder="Média mensal"
-                  value={form.media_energia_gerada_mensal}
-                  onChange={(e) =>
-                    setForm((p) => ({
-                      ...p,
-                      media_energia_gerada_mensal: e.target.value,
-                    }))
-                  }
-                />
-                <label>Média mensal de energia (MWh)</label>
-              </div>
+          {/* Linha 3 */}
+          <div className="row g-4">
 
-              <div className="col-md-4 form-floating">
-                <input
-                  type="number"
-                  step="0.01"
-                  className="form-control rounded-3 border-secondary-subtle"
-                  placeholder="Volume vendido"
-                  value={form.media_volume_vendido}
-                  onChange={(e) =>
-                    setForm((p) => ({
-                      ...p,
-                      media_volume_vendido: e.target.value,
-                    }))
-                  }
-                />
-                <label>Média mensal vendida (MWh)</label>
-              </div>
-
-              <div className="col-md-4 form-floating">
-                <input
-                  type="number"
-                  step="0.01"
-                  className="form-control rounded-3 border-secondary-subtle"
-                  placeholder="Capacidade anual"
-                  value={form.capacidade_anual_geracao}
-                  onChange={(e) =>
-                    setForm((p) => ({
-                      ...p,
-                      capacidade_anual_geracao: e.target.value,
-                    }))
-                  }
-                />
-                <label>Capacidade anual (MWh)</label>
-              </div>
+            <div className="col-md-4 form-floating">
+              <input
+                type="number"
+                step="0.01"
+                className="form-control rounded-3 border-secondary-subtle"
+                placeholder="Média mensal"
+                value={form.media_energia_gerada_mensal}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    media_energia_gerada_mensal: e.target.value,
+                  }))
+                }
+              />
+              <label>Média mensal de energia (MWh)</label>
             </div>
 
-            {/* Linha 4 */}
-            <div className="row g-4">
-
-              <div className="col-md-6 form-floating">
-                <input
-                  type="date"
-                  className="form-control rounded-3 border-secondary-subtle"
-                  value={form.data_inicio_operacao}
-                  onChange={(e) =>
-                    setForm((p) => ({
-                      ...p,
-                      data_inicio_operacao: e.target.value,
-                    }))
-                  }
-                />
-                <label>Data início operação</label>
-              </div>
-
-              <div className="col-md-6 form-floating">
-                <input
-                  type="date"
-                  className="form-control rounded-3 border-secondary-subtle"
-                  value={form.data_inicio_coleta}
-                  onChange={(e) =>
-                    setForm((p) => ({
-                      ...p,
-                      data_inicio_coleta: e.target.value,
-                    }))
-                  }
-                />
-                <label>Data início coleta</label>
-              </div>
+            <div className="col-md-4 form-floating">
+              <input
+                type="number"
+                step="0.01"
+                className="form-control rounded-3 border-secondary-subtle"
+                placeholder="Volume vendido"
+                value={form.media_volume_vendido_mensal}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    media_volume_vendido_mensal: e.target.value,
+                  }))
+                }
+              />
+              <label>Média mensal de Volume vendida (MWh)</label>
             </div>
 
-            {/* Botão */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn btn-primary py-3 fw-semibold rounded-3 mt-3 shadow-sm"
-            >
-              {loading ? "Salvando..." : "Continuar"}
-            </button>
+            <div className="col-md-4 form-floating">
+              <input
+                type="number"
+                step="0.01"
+                className="form-control rounded-3 border-secondary-subtle"
+                placeholder="Capacidade anual"
+                value={form.capacidade_total_instalada}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    capacidade_total_instalada: e.target.value,
+                  }))
+                }
+              />
+              <label>Capacidade total instalada (MWh)</label>
+            </div>
+          </div>
 
-          </form>
-        </div>
+          {/* Linha 4 */}
+          <div className="row g-4">
+
+            <div className="col-md-6 form-floating">
+              <input
+                type="date"
+                className="form-control rounded-3 border-secondary-subtle"
+                value={form.data_inicio_operacao}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    data_inicio_operacao: e.target.value,
+                  }))
+                }
+              />
+              <label>Data início operação</label>
+            </div>
+
+            <div className="col-md-6 form-floating">
+              <input
+                type="date"
+                className="form-control rounded-3 border-secondary-subtle"
+                value={form.data_inicio_coleta}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    data_inicio_coleta: e.target.value,
+                  }))
+                }
+              />
+              <label>Data início coleta</label>
+            </div>
+          </div>
+
+          {/* Botão */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn btn-primary py-2 fw-semibold rounded-3 shadow-sm"
+          >
+            {loading ? "Salvando..." : "Continuar"}
+          </button>
+
+        </form>
       </div>
     </div>
   );

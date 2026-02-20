@@ -6,7 +6,6 @@ import Biogas from "./biogas";
 import PCH from "./pch";
 import BESS from "./bess";
 
-// ...existing code...
 interface StepTecProps {
   usinaId: string;
   tecnologia: string;
@@ -32,7 +31,15 @@ export default function StepTecn({
     case "ARMAZENAMENTO":
       return <BESSComp usinaId={usinaId} />;
     default:
-      return <div>Tecnologia inválida</div>;
+      return (
+        <div className="container py-5">
+          <div
+            className="alert alert-warning border-0 shadow-sm mx-auto rounded-4 mb-0"
+            style={{ maxWidth: "640px" }}
+          >
+            Tecnologia inválida para esta usina.
+          </div>
+        </div>
+      );
   }
 }
-// ...existing 

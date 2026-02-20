@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/app/server/db";
 
+const FATORES: Record<string, number> = {
+  pch: 0.1,
+  fotovoltaico: 0.1,
+  biogas: 0.4,
+};
+
 const parseDateField = (value: unknown, fieldName: string) => {
   if (value == null || value === "") return null;
   if (value instanceof Date) return value;
@@ -18,9 +24,9 @@ const parseDateField = (value: unknown, fieldName: string) => {
   const isoDate =
     day && month && year
       ? `${year.padStart(4, "0")}-${month.padStart(2, "0")}-${day.padStart(
-          2,
-          "0"
-        )}`
+        2,
+        "0"
+      )}`
       : datePart;
 
   const candidate = timePart ? `${isoDate}T${timePart}` : isoDate;
@@ -32,6 +38,7 @@ const parseDateField = (value: unknown, fieldName: string) => {
 
   return parsed;
 };
+
 export async function GET() {
   const geradoras = await prisma.geradora.findMany();
   const safe = JSON.parse(
@@ -61,6 +68,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
+  const energiaMensal = Number(body.media_energia_gerada_mensal) || 0;
+  const tecnologia = body.tecnologia?.toLowerCase();
+  const fator = FATORES[tecnologia] ?? 0.1;
+  const reducaoCO2Mensal = energiaMensal * fator;
   const geradora = await prisma.geradora.create({
     data: {
       municipio_id: body.municipio_id,
@@ -70,12 +81,15 @@ export async function POST(req: Request) {
       data_inicio_operacao,
       tipo_comprador: body.tipo_comprador,
       tipo_contrato: body.tipo_contrato,
-      media_energia_gerada_mensal: body.media_energia_gerada_mensal,
-      media_volume_vendido_mensal: body.media_volume_vendido_mensal ?? null,
-      media_reducao_co2_mensal: body.media_reducao_co2_mensal ?? null,
-      capacidade_total_instalada: body.capacidade_total_instalada ?? null,
+      media_energia_gerada_mensal: energiaMensal,
+      media_volume_vendido_mensal:
+        body.media_volume_vendido_mensal ?? null,
+      media_reducao_co2_mensal: reducaoCO2Mensal.toString(),
+      capacidade_total_instalada:
+        body.capacidade_total_instalada ?? null,
     },
   });
+
   return NextResponse.json(
     JSON.parse(
       JSON.stringify(geradora, (_, v) =>

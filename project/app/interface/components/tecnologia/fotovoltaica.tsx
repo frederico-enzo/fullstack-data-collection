@@ -23,47 +23,68 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
     orientacao_modulos: "",
     area_desmatada_ha: "",
     area_reaproveitada_ha: "",
+    tipo_conexao: "",
+    fase: "",
   });
+
+  const toNumberOrNull = (value: string) =>
+    value === "" ? null : Number(value);
+
+  const toStringOrNull = (value: string) => {
+    const trimmed = value.trim();
+    return trimmed === "" ? null : trimmed;
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
 
-    const res = await fetch("/api/tecnologia/fotovoltaica", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        usina_id: usinaId,
-        area_ocupada_m2: Number(form.area_ocupada_m2) || null,
-        numero_modulos: Number(form.numero_modulos) || null,
-        tipo_modulo: form.tipo_modulo || null,
-        eficiencia_modulos_percent:
-          Number(form.potencia_unitaria_modulo_w) || null,
-        tipo_inversor: form.tipo_inversor || null,
-        quantidade_inversores:
-          Number(form.quantidade_inversores) || null,
-        eficiencia_media_inversores_percent:
-          Number(form.tensao_nominal_sistema_v) || null,
-        irradiacao_media_kwh_m2_ano:
-          Number(form.irradiacao_media_kwh_m2_ano) || null,
-        temperatura_media_operacao_c:
-          Number(form.temperatura_media_operacao_c) || null,
-        inclinacao_graus: Number(form.inclinacao_graus) || null,
-        orientacao_modulos: form.orientacao_modulos || null,
-        area_desmatada_ha: Number(form.area_desmatada_ha) || null,
-        area_reaproveitada_ha:
-          Number(form.area_reaproveitada_ha) || null,
-      }),
-    });
+    try {
+      const res = await fetch("/api/tecnologia/fotovoltaica", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usina_id: usinaId,
+          area_ocupada_m2: toNumberOrNull(form.area_ocupada_m2),
+          numero_modulos: toNumberOrNull(form.numero_modulos),
+          tipo_modulo: toStringOrNull(form.tipo_modulo),
+          potencia_unitaria_modulo_w: toNumberOrNull(
+            form.potencia_unitaria_modulo_w
+          ),
+          tipo_inversor: toStringOrNull(form.tipo_inversor),
+          quantidade_inversores: toNumberOrNull(
+            form.quantidade_inversores
+          ),
+          tensao_nominal_sistema_v: toNumberOrNull(
+            form.tensao_nominal_sistema_v
+          ),
+          irradiacao_media_kwh_m2_ano: toNumberOrNull(
+            form.irradiacao_media_kwh_m2_ano
+          ),
+          temperatura_media_operacao_c: toNumberOrNull(
+            form.temperatura_media_operacao_c
+          ),
+          inclinacao_graus: toNumberOrNull(form.inclinacao_graus),
+          orientacao_modulos: toStringOrNull(form.orientacao_modulos),
+          area_desmatada_ha: toNumberOrNull(form.area_desmatada_ha),
+          area_reaproveitada_ha: toNumberOrNull(
+            form.area_reaproveitada_ha
+          ),
+          tipo_conexao: toStringOrNull(form.tipo_conexao),
+          fase: toStringOrNull(form.fase),
+        }),
+      });
 
-    if (!res.ok) {
+      if (!res.ok) {
+        throw new Error();
+      }
+
+      alert("Fotovoltaica cadastrada com sucesso");
+    } catch {
       alert("Erro ao salvar dados da fotovoltaica");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setLoading(false);
-    alert("Fotovoltaica cadastrada com sucesso");
   }
 
   return (
@@ -72,7 +93,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
         className="card border-0 shadow-sm mx-auto rounded-4"
         style={{ maxWidth: "900px" }}
       >
-        <div className="card-header bg-white border-0 pt-4 px-4">
+        <div className="card-header bg-white border-0 pb-0 pt-4 px-4">
           <span className="badge bg-primary-subtle text-primary mb-2">
             Etapa 3 de 4
           </span>
@@ -82,8 +103,10 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
           </p>
         </div>
 
-        <div className="card-body px-4 pt-4 pb-5">
-          <form onSubmit={handleSubmit} className="d-flex flex-column gap-4">
+        <form
+          onSubmit={handleSubmit}
+          className="d-flex flex-column gap-4 p-4 border rounded-4 bg-white shadow-sm"
+        >
 
             {/* Área e módulos */}
             <div className="row g-3">
@@ -91,7 +114,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Área ocupada"
                   value={form.area_ocupada_m2}
                   onChange={(e) =>
@@ -104,7 +127,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
               <div className="col-md-6 form-floating">
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Número de módulos"
                   value={form.numero_modulos}
                   onChange={(e) =>
@@ -118,7 +141,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
             <div className="row g-3">
               <div className="col-md-6 form-floating">
                 <select
-                  className="form-select"
+                  className="form-select rounded-3 border-secondary-subtle"
                   value={form.tipo_modulo}
                   onChange={(e) =>
                     setForm({ ...form, tipo_modulo: e.target.value })
@@ -134,13 +157,11 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 </select>
                 <label>Tipo de módulo</label>
               </div>
-            </div>
 
-            <div className="row g-3">
               <div className="col-md-6 form-floating">
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Potência unitária"
                   value={form.potencia_unitaria_modulo_w}
                   onChange={(e) =>
@@ -153,9 +174,13 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 <label>Potência unitária do módulo (W)</label>
               </div>
 
+            </div>
+
+            {/* Inversores */}
+            <div className="row g-3">
               <div className="col-md-6 form-floating">
                 <select
-                  className="form-select"
+                  className="form-select rounded-3 border-secondary-subtle"
                   value={form.tipo_inversor}
                   onChange={(e) =>
                     setForm({ ...form, tipo_inversor: e.target.value })
@@ -171,14 +196,11 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 </select>
                 <label>Tipo de inversor</label>
               </div>
-            </div>
 
-            {/* Inversores */}
-            <div className="row g-3">
               <div className="col-md-6 form-floating">
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Quantidade de inversores"
                   value={form.quantidade_inversores}
                   onChange={(e) =>
@@ -190,8 +212,6 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 />
                 <label>Quantidade de inversores</label>
               </div>
-
-
             </div>
 
             {/* Condições elétricas e ambientais */}
@@ -199,7 +219,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
               <div className="col-md-6 form-floating">
                 <input
                   type="number"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Tensão nominal"
                   value={form.tensao_nominal_sistema_v}
                   onChange={(e) =>
@@ -216,7 +236,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Irradiação média"
                   value={form.irradiacao_media_kwh_m2_ano}
                   onChange={(e) =>
@@ -235,7 +255,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Temperatura média"
                   value={form.temperatura_media_operacao_c}
                   onChange={(e) =>
@@ -252,7 +272,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Inclinação"
                   value={form.inclinacao_graus}
                   onChange={(e) =>
@@ -267,7 +287,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
 
               <div className="col-md-4 form-floating">
                 <select
-                  className="form-select"
+                  className="form-select rounded-3 border-secondary-subtle"
                   value={form.orientacao_modulos}
                   onChange={(e) =>
                     setForm({
@@ -293,7 +313,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Área desmatada"
                   value={form.area_desmatada_ha}
                   onChange={(e) =>
@@ -310,7 +330,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
                 <input
                   type="number"
                   step="0.01"
-                  className="form-control"
+                  className="form-control rounded-3 border-secondary-subtle"
                   placeholder="Área reaproveitada"
                   value={form.area_reaproveitada_ha}
                   onChange={(e) =>
@@ -324,15 +344,55 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
               </div>
             </div>
 
+            <div className="row g-3">
+              <div className="col-md-6 form-floating">
+                <select
+                  className="form-select rounded-3 border-secondary-subtle"
+                  value={form.tipo_conexao}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      tipo_conexao: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Selecione</option>
+                  <option value="ON_GRID">On-grid</option>
+                  <option value="OFF_GRID">Off-grid</option>
+                  <option value="HIBRIDO">Híbrido</option>
+                  <option value="OUTRO">Outro</option>
+                </select>
+                <label>Tipo de conexão</label>
+              </div>
+
+              <div className="col-md-6 form-floating">
+                <select
+                  className="form-select rounded-3 border-secondary-subtle"
+                  value={form.fase}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      fase: e.target.value,
+                    })
+                  }
+                >
+                  <option value="">Selecione</option>
+                  <option value="MONOFASICA">Monofásica</option>
+                  <option value="BIFASICA">Bifásica</option>
+                  <option value="TRIFASICA">Trifásica</option>
+                </select>
+                <label>Fase</label>
+              </div>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary py-3 fw-semibold mt-3"
+              className="btn btn-primary py-2 fw-semibold rounded-3 shadow-sm"
             >
               {loading ? "Salvando..." : "Continuar"}
             </button>
-          </form>
-        </div>
+        </form>
       </div>
     </div>
   );

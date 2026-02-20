@@ -42,9 +42,6 @@ model ator {
 model biogas {
   id                          BigInt    @id @default(autoincrement())
   geradora_id                 BigInt?   @unique
-  capacidade_instalada_mw     Decimal?  @db.Decimal(18, 2)
-  energia_gerada_mensal_mwh   Decimal?  @db.Decimal(18, 2)
-  energia_gerada_anual_mwh    Decimal?  @db.Decimal(18, 2)
   tipo_substrato              String?   @db.VarChar
   quantidade_processada_t_dia Decimal?  @db.Decimal(18, 2)
   teor_solidos_percent        Decimal?  @db.Decimal(5, 2)
@@ -57,7 +54,6 @@ model biogas {
   producao_biogas_nm3_dia     Decimal?  @db.Decimal(18, 2)
   pressao_media_bar           Decimal?  @db.Decimal(6, 2)
   temperatura_media_c         Decimal?  @db.Decimal(6, 2)
-  reducao_emissoes_tco2eq_ano Decimal?  @db.Decimal(18, 2)
   destinacao_digestato        String?   @db.VarChar
   geradora                    geradora? @relation(fields: [geradora_id], references: [id])
 }
