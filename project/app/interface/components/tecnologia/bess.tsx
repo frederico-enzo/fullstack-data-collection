@@ -4,9 +4,10 @@ import { useState } from "react";
 
 interface BESSProps {
   usinaId: string;
+  onNext: () => void;
 }
 
-export default function BESS({ usinaId }: BESSProps) {
+export default function BESS({ usinaId, onNext }: BESSProps) {
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -88,6 +89,7 @@ export default function BESS({ usinaId }: BESSProps) {
       }
 
       alert("Armazenamento (BESS) cadastrado com sucesso");
+      onNext();
     } catch {
       alert("Erro ao salvar dados do armazenamento (BESS)");
     } finally {

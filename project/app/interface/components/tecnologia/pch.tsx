@@ -4,6 +4,7 @@ import { useState } from "react";
 
 interface PCHProps {
   usinaId: string;
+  onNext: () => void;
 }
 
 type PchFormState = {
@@ -51,7 +52,7 @@ const conexaoCampos: Array<[keyof PchFormState, string]> = [
   ["distribuidora_vinculada", "Distribuidora vinculada"],
 ];
 
-export default function PCH({ usinaId }: PCHProps) {
+export default function PCH({ usinaId, onNext }: PCHProps) {
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState<PchFormState>({
@@ -124,6 +125,7 @@ export default function PCH({ usinaId }: PCHProps) {
       if (!res.ok) throw new Error();
 
       alert("PCH cadastrada com sucesso");
+      onNext();
     } catch {
       alert("Erro ao salvar dados da PCH");
     } finally {

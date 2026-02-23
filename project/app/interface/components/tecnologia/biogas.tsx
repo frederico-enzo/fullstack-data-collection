@@ -4,9 +4,10 @@ import { useState } from "react";
 
 interface BiogasProps {
     usinaId: string;
+    onNext: () => void;
 }
 
-export default function Biogas({ usinaId }: BiogasProps) {
+export default function Biogas({ usinaId, onNext }: BiogasProps) {
     const [loading, setLoading] = useState(false);
 
     const [form, setForm] = useState({
@@ -65,6 +66,7 @@ export default function Biogas({ usinaId }: BiogasProps) {
             }
 
             alert("Biogás cadastrado com sucesso");
+            onNext();
         } catch {
             alert("Erro ao salvar dados de biogás");
         } finally {

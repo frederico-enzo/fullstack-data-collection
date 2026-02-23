@@ -4,9 +4,10 @@ import { useState } from "react";
 
 interface FotovoltaicaProps {
   usinaId: string;
+  onNext: () => void;
 }
 
-export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
+export default function Fotovoltaica({ usinaId, onNext }: FotovoltaicaProps) {
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -80,6 +81,7 @@ export default function Fotovoltaica({ usinaId }: FotovoltaicaProps) {
       }
 
       alert("Fotovoltaica cadastrada com sucesso");
+      onNext();
     } catch {
       alert("Erro ao salvar dados da fotovoltaica");
     } finally {

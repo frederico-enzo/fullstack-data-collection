@@ -23,7 +23,6 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
     tipo_comprador: "",
     tipo_contrato: "",
     data_inicio_operacao: "",
-    data_inicio_coleta: "",
     media_energia_gerada_mensal: "",
     media_volume_vendido_mensal: "",
     media_reducao_co2_mensal: "",
@@ -68,9 +67,7 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
       data_inicio_operacao: form.data_inicio_operacao
         ? new Date(form.data_inicio_operacao)
         : null,
-      data_inicio_coleta: form.data_inicio_coleta
-        ? new Date(form.data_inicio_coleta)
-        : null,
+      data_inicio_coleta: new Date(Date.now()),
     };
 
     const res = await fetch("/api/geradora", {
@@ -116,7 +113,7 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
           {/* Linha 1 */}
           <div className="row g-4">
 
-            <div className="col-md-6 form-floating">
+            <div className="col-md-4 form-floating">
               <select
                 className="form-select rounded-3 border-secondary-subtle"
                 required
@@ -134,7 +131,7 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
               <label>Tecnologia *</label>
             </div>
 
-            <div className="col-md-6 form-floating">
+            <div className="col-md-4 form-floating">
               <input
                 type="text"
                 className="form-control rounded-3 border-secondary-subtle"
@@ -158,6 +155,21 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
                 ))}
               </datalist>
               <label>Município *</label>
+            </div>
+
+            <div className="col-md-4 form-floating">
+              <input
+                type="date"
+                className="form-control rounded-3 border-secondary-subtle"
+                value={form.data_inicio_operacao}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    data_inicio_operacao: e.target.value,
+                  }))
+                }
+              />
+              <label>Data início operação</label>
             </div>
           </div>
 
@@ -223,7 +235,22 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
               />
               <label>Média mensal de energia (MWh)</label>
             </div>
-
+            <div className="col-md-4 form-floating">
+              <input
+                type="number"
+                step="0.01"
+                className="form-control rounded-3 border-secondary-subtle"
+                placeholder="Capacidade anual"
+                value={form.capacidade_total_instalada}
+                onChange={(e) =>
+                  setForm((p) => ({
+                    ...p,
+                    capacidade_total_instalada: e.target.value,
+                  }))
+                }
+              />
+              <label>Capacidade total instalada (MWh)</label>
+            </div>
             <div className="col-md-4 form-floating">
               <input
                 type="number"
@@ -241,56 +268,7 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
               <label>Média mensal de Volume vendida (MWh)</label>
             </div>
 
-            <div className="col-md-4 form-floating">
-              <input
-                type="number"
-                step="0.01"
-                className="form-control rounded-3 border-secondary-subtle"
-                placeholder="Capacidade anual"
-                value={form.capacidade_total_instalada}
-                onChange={(e) =>
-                  setForm((p) => ({
-                    ...p,
-                    capacidade_total_instalada: e.target.value,
-                  }))
-                }
-              />
-              <label>Capacidade total instalada (MWh)</label>
-            </div>
-          </div>
 
-          {/* Linha 4 */}
-          <div className="row g-4">
-
-            <div className="col-md-6 form-floating">
-              <input
-                type="date"
-                className="form-control rounded-3 border-secondary-subtle"
-                value={form.data_inicio_operacao}
-                onChange={(e) =>
-                  setForm((p) => ({
-                    ...p,
-                    data_inicio_operacao: e.target.value,
-                  }))
-                }
-              />
-              <label>Data início operação</label>
-            </div>
-
-            <div className="col-md-6 form-floating">
-              <input
-                type="date"
-                className="form-control rounded-3 border-secondary-subtle"
-                value={form.data_inicio_coleta}
-                onChange={(e) =>
-                  setForm((p) => ({
-                    ...p,
-                    data_inicio_coleta: e.target.value,
-                  }))
-                }
-              />
-              <label>Data início coleta</label>
-            </div>
           </div>
 
           {/* Botão */}

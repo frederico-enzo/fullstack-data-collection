@@ -9,27 +9,35 @@ import BESS from "./bess";
 interface StepTecProps {
   usinaId: string;
   tecnologia: string;
+  onNext: () => void;
 }
 
 // Cast imports to typed component types so props are accepted
-const FotovoltaicaComp = Fotovoltaica as ComponentType<{ usinaId: string }>;
-const BiogasComp = Biogas as ComponentType<{ usinaId: string }>;
-const PCHComp = PCH as ComponentType<{ usinaId: string }>;
-const BESSComp = BESS as ComponentType<{ usinaId: string }>;
+const FotovoltaicaComp = Fotovoltaica as ComponentType<{
+  usinaId: string;
+  onNext: () => void;
+}>;
+const BiogasComp = Biogas as ComponentType<{
+  usinaId: string;
+  onNext: () => void;
+}>;
+const PCHComp = PCH as ComponentType<{ usinaId: string; onNext: () => void }>;
+const BESSComp = BESS as ComponentType<{ usinaId: string; onNext: () => void }>;
 
 export default function StepTecn({
   usinaId,
   tecnologia,
+  onNext,
 }: StepTecProps) {
   switch (tecnologia) {
     case "FOTOVOLTAICA":
-      return <FotovoltaicaComp usinaId={usinaId} />;
+      return <FotovoltaicaComp usinaId={usinaId} onNext={onNext} />;
     case "BIOGAS":
-      return <BiogasComp usinaId={usinaId} />;
+      return <BiogasComp usinaId={usinaId} onNext={onNext} />;
     case "PCH":
-      return <PCHComp usinaId={usinaId} />;
+      return <PCHComp usinaId={usinaId} onNext={onNext} />;
     case "ARMAZENAMENTO":
-      return <BESSComp usinaId={usinaId} />;
+      return <BESSComp usinaId={usinaId} onNext={onNext} />;
     default:
       return (
         <div className="container py-5">
