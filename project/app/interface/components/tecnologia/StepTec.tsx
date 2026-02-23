@@ -40,10 +40,10 @@ export default function StepTecn({
       return <BESSComp usinaId={usinaId} onNext={onNext} />;
     default:
       return (
-        <div className="container py-5">
+        <div className="container py-3 py-md-4">
           <div
             className="alert alert-warning border-0 shadow-sm mx-auto rounded-4 mb-0"
-            style={{ maxWidth: "640px" }}
+            style={{ maxWidth: "720px", width: "100%" }}
           >
             Tecnologia inválida para esta usina.
           </div>
