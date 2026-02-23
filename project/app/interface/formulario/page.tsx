@@ -8,7 +8,7 @@ import StepEquipamento from "../components/equipamento/StepEquipamento";
 
 type StepKey = "ator" | "geradora" | "tecnologia" | "equipamento" | "revisao";
 type AnyData = Record<string, unknown>;
-type DataGroup = { title: string; keys: string[] };
+type DataGroup = { title: string; rows: string[][] };
 
 const INTERNAL_KEYS = new Set([
   "id",
@@ -67,8 +67,8 @@ function getGroups(title: string, data: AnyData | null | undefined): DataGroup[]
 
   if (title === "Ator") {
     return [
-      { title: "Identificação", keys: ["nome", "cnpj_cpf"] },
-      { title: "Contato", keys: ["telefone", "email"] },
+      { title: "Identificação", rows: [["nome", "cnpj_cpf"]] },
+      { title: "Contato", rows: [["telefone", "email"]] },
     ];
   }
 
@@ -76,16 +76,18 @@ function getGroups(title: string, data: AnyData | null | undefined): DataGroup[]
     return [
       {
         title: "Dados Gerais",
-        keys: ["tecnologia", "municipio", "data_inicio_operacao"],
+        rows: [["tecnologia", "municipio", "data_inicio_operacao"]],
       },
-      { title: "Comercial", keys: ["tipo_comprador", "tipo_contrato"] },
+      { title: "Comercial", rows: [["tipo_comprador", "tipo_contrato"]] },
       {
         title: "Indicadores",
-        keys: [
-          "media_energia_gerada_mensal",
-          "capacidade_total_instalada",
-          "media_volume_vendido_mensal",
-          "media_reducao_co2_mensal",
+        rows: [
+          [
+            "media_energia_gerada_mensal",
+            "capacidade_total_instalada",
+            "media_volume_vendido_mensal",
+            "media_reducao_co2_mensal",
+          ],
         ],
       },
     ];
@@ -95,13 +97,12 @@ function getGroups(title: string, data: AnyData | null | undefined): DataGroup[]
     return [
       {
         title: "Identificação",
-        keys: ["tipo_equipamento", "fabricante", "modelo", "ano_fabricacao"],
+        rows: [["tipo_equipamento", "fabricante"], ["modelo", "ano_fabricacao"]],
       },
       {
         title: "Desempenho",
-        keys: ["potencia_nominal", "eficiencia_percent", "vida_util_anos"],
+        rows: [["potencia_nominal", "eficiencia_percent"], ["vida_util_anos", "valor"]],
       },
-      { title: "Financeiro", keys: ["valor"] },
     ];
   }
 
@@ -111,32 +112,27 @@ function getGroups(title: string, data: AnyData | null | undefined): DataGroup[]
       return [
         {
           title: "Área e Módulos",
-          keys: [
-            "area_ocupada_m2",
-            "numero_modulos",
-            "tipo_modulo",
-            "potencia_unitaria_modulo_w",
+          rows: [
+            ["area_ocupada_m2", "numero_modulos"],
+            ["tipo_modulo", "potencia_unitaria_modulo_w"],
           ],
         },
         {
           title: "Inversores",
-          keys: ["tipo_inversor", "quantidade_inversores"],
+          rows: [["tipo_inversor", "quantidade_inversores"]],
         },
         {
           title: "Condições Elétricas e Ambientais",
-          keys: [
-            "tensao_nominal_sistema_v",
-            "irradiacao_media_kwh_m2_ano",
-            "temperatura_media_operacao_c",
-            "inclinacao_graus",
-            "orientacao_modulos",
+          rows: [
+            ["tensao_nominal_sistema_v", "irradiacao_media_kwh_m2_ano"],
+            ["temperatura_media_operacao_c", "inclinacao_graus", "orientacao_modulos"],
           ],
         },
         {
           title: "Uso do Solo",
-          keys: ["area_desmatada_ha", "area_reaproveitada_ha"],
+          rows: [["area_desmatada_ha", "area_reaproveitada_ha"]],
         },
-        { title: "Conexão", keys: ["tipo_conexao", "fase"] },
+        { title: "Conexão", rows: [["tipo_conexao", "fase"]] },
       ];
     }
 
@@ -144,30 +140,22 @@ function getGroups(title: string, data: AnyData | null | undefined): DataGroup[]
       return [
         {
           title: "Processo",
-          keys: [
-            "tipo_substrato",
-            "tipo_biodigestor",
-            "quantidade_processada_t_dia",
-            "tratamento_biogas",
-            "equipamento_conversao",
+          rows: [
+            ["tipo_substrato", "tipo_biodigestor"],
+            ["quantidade_processada_t_dia", "tratamento_biogas"],
+            ["equipamento_conversao"],
           ],
         },
         {
           title: "Eficiências",
-          keys: [
-            "eficiencia_eletrica_percent",
-            "eficiencia_termica_percent",
-            "teor_solidos_percent",
-          ],
+          rows: [["eficiencia_eletrica_percent", "eficiencia_termica_percent", "teor_solidos_percent"]],
         },
         {
           title: "Operação e Ambiental",
-          keys: [
-            "sistema_queima_excedente",
-            "producao_biogas_nm3_dia",
-            "pressao_media_bar",
-            "temperatura_media_c",
-            "destinacao_digestato",
+          rows: [
+            ["sistema_queima_excedente"],
+            ["producao_biogas_nm3_dia", "pressao_media_bar", "temperatura_media_c"],
+            ["destinacao_digestato"],
           ],
         },
       ];
@@ -177,39 +165,26 @@ function getGroups(title: string, data: AnyData | null | undefined): DataGroup[]
       return [
         {
           title: "Hidrologia",
-          keys: [
-            "rio_aproveitado",
-            "vazao_media_m3s",
-            "vazao_turbinada_m3s",
-            "queda_bruta_m",
-            "queda_liquida_m",
+          rows: [
+            ["rio_aproveitado", "tipo_turbina"],
+            ["vazao_media_m3s", "vazao_turbinada_m3s", "queda_bruta_m", "queda_liquida_m"],
           ],
         },
         {
           title: "Turbinas",
-          keys: [
-            "tipo_turbina",
-            "numero_turbinas",
-            "potencia_unitaria_turbina_mw",
-            "tipo_gerador",
+          rows: [
+            ["numero_turbinas", "potencia_unitaria_turbina_mw", "tipo_gerador"],
           ],
         },
         {
           title: "Rendimentos",
-          keys: [
-            "rendimento_turbina_percent",
-            "rendimento_gerador_percent",
-            "eficiencia_global_percent",
-          ],
+          rows: [["rendimento_turbina_percent", "rendimento_gerador_percent", "eficiencia_global_percent"]],
         },
         {
           title: "Conexão Elétrica",
-          keys: [
-            "tensao_nominal_sistema_kv",
-            "sistema_regulacao",
-            "nivel_tensao_conexao",
-            "subestacao_conexao",
-            "distribuidora_vinculada",
+          rows: [
+            ["tensao_nominal_sistema_kv", "sistema_regulacao"],
+            ["nivel_tensao_conexao", "subestacao_conexao", "distribuidora_vinculada"],
           ],
         },
       ];
@@ -219,34 +194,24 @@ function getGroups(title: string, data: AnyData | null | undefined): DataGroup[]
       return [
         {
           title: "Bateria",
-          keys: [
-            "temperatura_operacao_c",
-            "tecnologia_bateria",
-            "fabricante_bateria",
-            "quantidade_modulos",
-            "capacidade_unitaria_kwh",
+          rows: [
+            ["temperatura_operacao_c", "tecnologia_bateria", "fabricante_bateria"],
+            ["quantidade_modulos", "capacidade_unitaria_kwh"],
           ],
         },
         {
           title: "Elétrico",
-          keys: [
-            "tensao_nominal_sistema_v",
-            "corrente_nominal_a",
-            "profundidade_descarga_percent",
-            "vida_util_ciclos",
-            "tempo_recarga_horas",
-            "eficiencia_conversao_percent",
+          rows: [
+            ["tensao_nominal_sistema_v", "corrente_nominal_a", "profundidade_descarga_percent"],
+            ["vida_util_ciclos", "tempo_recarga_horas", "eficiencia_conversao_percent"],
           ],
         },
         {
           title: "Operação e Conexão",
-          keys: [
-            "sistema_gerenciamento_bms",
-            "sistema_conversao_potencia",
-            "modalidade_operacao",
-            "tipo_conexao",
-            "nivel_tensao_conexao",
-            "fator_capacidade_percent",
+          rows: [
+            ["sistema_gerenciamento_bms", "sistema_conversao_potencia"],
+            ["modalidade_operacao", "tipo_conexao", "nivel_tensao_conexao"],
+            ["fator_capacidade_percent"],
           ],
         },
       ];
@@ -265,27 +230,49 @@ function DataSection({
 }) {
   const entries = data
     ? Object.entries(data).filter(([key]) => {
-        const normalizedKey = key.toLowerCase();
-        if (INTERNAL_KEYS.has(normalizedKey)) return false;
-        if (title !== "Geradora") return true;
-        return !["fotovoltaico", "biogas", "pch", "armazenamento"].includes(normalizedKey);
-      })
+      const normalizedKey = key.toLowerCase();
+      if (INTERNAL_KEYS.has(normalizedKey)) return false;
+      if (title !== "Geradora") return true;
+      return !["fotovoltaico", "biogas", "pch", "armazenamento"].includes(normalizedKey);
+    })
     : [];
   const groups = getGroups(title, data ?? undefined);
   const entriesMap = new Map(entries);
-  const orderedKeys = groups.flatMap((group) => group.keys).filter((key) => entriesMap.has(key));
-  const orderedEntries = orderedKeys.map((key) => [key, entriesMap.get(key)] as const);
-  const orderedSet = new Set(orderedKeys);
+  const structuredRows = groups
+    .flatMap((group) => group.rows)
+    .map((row) =>
+      row
+        .filter((key) => entriesMap.has(key))
+        .map((key) => [key, entriesMap.get(key)] as const)
+    )
+    .filter((row) => row.length > 0);
+  const orderedSet = new Set(structuredRows.flatMap((row) => row.map(([key]) => key)));
   const remainingEntries = entries.filter(([key]) => !orderedSet.has(key));
-  const finalEntries = [...orderedEntries, ...remainingEntries];
-  const rows: Array<Array<(typeof finalEntries)[number]>> = [];
+  const rows: Array<Array<(typeof entries)[number]>> = [...structuredRows];
 
-  if (finalEntries.length % 2 === 1 && finalEntries.length > 1) {
-    const splitIndex = finalEntries.length - 3;
-    for (let i = 0; i < splitIndex; i += 2) rows.push(finalEntries.slice(i, i + 2));
-    rows.push(finalEntries.slice(splitIndex));
-  } else {
-    for (let i = 0; i < finalEntries.length; i += 2) rows.push(finalEntries.slice(i, i + 2));
+  for (let i = 0; i < remainingEntries.length; i += 2) {
+    rows.push(remainingEntries.slice(i, i + 2));
+  }
+  const balancedRows = rows.map((row) => [...row]);
+
+  // Avoid single-field rows by merging them with adjacent rows when possible.
+  for (let i = 0; i < balancedRows.length; i += 1) {
+    if (balancedRows[i].length !== 1) continue;
+
+    const singleItem = balancedRows[i][0];
+
+    if (i > 0 && balancedRows[i - 1].length < 3) {
+      balancedRows[i - 1].push(singleItem);
+      balancedRows.splice(i, 1);
+      i -= 1;
+      continue;
+    }
+
+    if (i + 1 < balancedRows.length && balancedRows[i + 1].length < 3) {
+      balancedRows[i + 1].unshift(singleItem);
+      balancedRows.splice(i, 1);
+      i -= 1;
+    }
   }
 
   return (
@@ -294,11 +281,11 @@ function DataSection({
         <h3 className="small fw-bold text-uppercase text-secondary mb-2">
           {title}
         </h3>
-        {!data || finalEntries.length === 0 ? (
+        {!data || balancedRows.length === 0 ? (
           <p className="small text-muted mb-0">Sem dados.</p>
         ) : (
           <div className="d-flex flex-column gap-2">
-            {rows.map((row, rowIndex) => (
+            {balancedRows.map((row, rowIndex) => (
               <div key={`row-${rowIndex}`} className="row g-2">
                 {row.map(([key, value]) => (
                   <div key={key} className={row.length === 3 ? "col-md-4" : "col-md-6"}>
@@ -428,13 +415,12 @@ export default function FormularioPage() {
                   type="button"
                   onClick={() => goToUnlockedStep(stepKey)}
                   disabled={!isUnlocked}
-                  className={`btn px-3 py-1 ${
-                    isActive
+                  className={`btn px-3 py-1 ${isActive
                       ? "btn-primary"
                       : isUnlocked
                         ? "btn-outline-primary"
                         : "btn-outline-secondary"
-                  }`}
+                    }`}
                 >
                   {STEP_LABELS[stepKey]}
                 </button>
