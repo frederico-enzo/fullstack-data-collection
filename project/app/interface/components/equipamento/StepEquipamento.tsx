@@ -4,9 +4,17 @@ import { useState } from "react";
 
 interface StepEquipamentoProps {
   usinaId: string;
+  equipamentoId: string | null;
+  onSaved: (id: string) => void;
+  onNext: () => void;
 }
 
-export default function StepEquipamento({ usinaId }: StepEquipamentoProps) {
+export default function StepEquipamento({
+  usinaId,
+  equipamentoId,
+  onSaved,
+  onNext,
+}: StepEquipamentoProps) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     tipo_equipamento: "",
@@ -37,6 +45,7 @@ export default function StepEquipamento({ usinaId }: StepEquipamentoProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           usina_id: usinaId,
+          equipamento_id: equipamentoId,
           tipo_equipamento: toStringOrNull(form.tipo_equipamento),
           fabricante: toStringOrNull(form.fabricante),
           modelo: toStringOrNull(form.modelo),
@@ -52,7 +61,10 @@ export default function StepEquipamento({ usinaId }: StepEquipamentoProps) {
         throw new Error();
       }
 
-      alert("Equipamento cadastrado e vinculado à geradora com sucesso");
+      const equipamento = await res.json();
+      onSaved(String(equipamento.id));
+      alert("Equipamento salvo e vinculado à geradora com sucesso");
+      onNext();
     } catch {
       alert("Erro ao salvar equipamento");
     } finally {
@@ -64,11 +76,11 @@ export default function StepEquipamento({ usinaId }: StepEquipamentoProps) {
     <div className="container py-5">
       <div
         className="card border-0 shadow-sm mx-auto rounded-4"
-        style={{ maxWidth: "900px" }}
+        style={{ maxWidth: "1000px", minHeight: "760px" }}
       >
         <div className="card-header bg-white border-0 pb-0 pt-4 px-4">
           <span className="badge bg-primary-subtle text-primary mb-2">
-            Etapa 4 de 4
+            Etapa 4 de 5
           </span>
           <h2 className="fw-bold mb-1">Equipamento</h2>
           <p className="text-muted mb-0">
@@ -210,7 +222,7 @@ export default function StepEquipamento({ usinaId }: StepEquipamentoProps) {
             disabled={loading}
             className="btn btn-primary py-2 fw-semibold rounded-3 shadow-sm"
           >
-            {loading ? "Salvando..." : "Finalizar"}
+            {loading ? "Salvando..." : "Salvar e revisar"}
           </button>
         </form>
       </div>

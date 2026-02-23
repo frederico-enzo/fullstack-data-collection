@@ -78,11 +78,11 @@ export default function Biogas({ usinaId, onNext }: BiogasProps) {
         <div className="container py-5">
             <div
                 className="card border-0 shadow-sm mx-auto rounded-4"
-                style={{ maxWidth: "1000px" }}
+                style={{ maxWidth: "1000px", minHeight: "760px" }}
             >
                 <div className="card-header bg-white border-0 pb-0 pt-4 px-4">
                     <span className="badge bg-primary-subtle text-primary mb-2">
-                        Etapa 3 de 4
+                        Etapa 3 de 5
                     </span>
                     <h2 className="fw-bold mb-1">Tecnologia — Biogás</h2>
                     <p className="text-muted mb-0">
