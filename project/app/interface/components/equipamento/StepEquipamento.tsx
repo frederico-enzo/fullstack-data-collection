@@ -1,31 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface StepEquipamentoProps {
   usinaId: string;
-  equipamentoId: string | null;
-  onSaved: (id: string) => void;
   onNext: () => void;
 }
 
+interface ExistingEquipamento {
+  id: string;
+  tipo_equipamento: string | null;
+  fabricante: string | null;
+  modelo: string | null;
+  ano_fabricacao: number | null;
+}
+
+const INITIAL_FORM = {
+  tipo_equipamento: "",
+  fabricante: "",
+  modelo: "",
+  potencia_nominal: "",
+  eficiencia_percent: "",
+  ano_fabricacao: "",
+  valor: "",
+  vida_util_anos: "",
+};
+
 export default function StepEquipamento({
   usinaId,
-  equipamentoId,
-  onSaved,
   onNext,
 }: StepEquipamentoProps) {
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    tipo_equipamento: "",
-    fabricante: "",
-    modelo: "",
-    potencia_nominal: "",
-    eficiencia_percent: "",
-    ano_fabricacao: "",
-    valor: "",
-    vida_util_anos: "",
-  });
+  const [loadingMode, setLoadingMode] = useState<"add" | "review" | "link" | null>(null);
+  const [savedCount, setSavedCount] = useState(0);
+  const [form, setForm] = useState(INITIAL_FORM);
+  const [existingEquipamentos, setExistingEquipamentos] = useState<
+    ExistingEquipamento[]
+  >([]);
+  const [existingSearch, setExistingSearch] = useState("");
+  const [selectedExistingId, setSelectedExistingId] = useState("");
+  const [loadingExisting, setLoadingExisting] = useState(false);
 
   const toNumberOrNull = (value: string) =>
     value.trim() === "" ? null : Number(value);
@@ -35,9 +48,77 @@ export default function StepEquipamento({
     return trimmed === "" ? null : trimmed;
   };
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
+  function formatExistingLabel(item: ExistingEquipamento) {
+    const main = [
+      item.tipo_equipamento || "Sem tipo",
+      item.fabricante || "Sem fabricante",
+      item.modelo || "Sem modelo",
+    ].join(" | ");
+
+    return item.ano_fabricacao ? `${main} (${item.ano_fabricacao})` : main;
+  }
+
+  async function loadExistingEquipamentos(search = "") {
+    setLoadingExisting(true);
+    try {
+      const query = new URLSearchParams();
+      query.set("limit", "30");
+      if (search.trim() !== "") {
+        query.set("search", search.trim());
+      }
+
+      const res = await fetch(`/api/equipamento?${query.toString()}`);
+      if (!res.ok) {
+        throw new Error();
+      }
+
+      const data: ExistingEquipamento[] = await res.json();
+      setExistingEquipamentos(data);
+    } catch {
+      alert("Erro ao carregar equipamentos existentes");
+    } finally {
+      setLoadingExisting(false);
+    }
+  }
+
+  useEffect(() => {
+    loadExistingEquipamentos();
+  }, []);
+
+  async function handleLinkExisting() {
+    if (!selectedExistingId) {
+      alert("Selecione um equipamento já cadastrado.");
+      return;
+    }
+
+    setLoadingMode("link");
+    try {
+      const res = await fetch("/api/equipamento", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          usina_id: usinaId,
+          equipamento_id: selectedExistingId,
+          vincular_existente: true,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error();
+      }
+
+      await res.json();
+      setSavedCount((current) => current + 1);
+      alert("Equipamento existente vinculado com sucesso.");
+    } catch {
+      alert("Erro ao vincular equipamento existente");
+    } finally {
+      setLoadingMode(null);
+    }
+  }
+
+  async function handleSave(mode: "add" | "review") {
+    setLoadingMode(mode);
 
     try {
       const res = await fetch("/api/equipamento", {
@@ -45,7 +126,6 @@ export default function StepEquipamento({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           usina_id: usinaId,
-          equipamento_id: equipamentoId,
           tipo_equipamento: toStringOrNull(form.tipo_equipamento),
           fabricante: toStringOrNull(form.fabricante),
           modelo: toStringOrNull(form.modelo),
@@ -61,14 +141,20 @@ export default function StepEquipamento({
         throw new Error();
       }
 
-      const equipamento = await res.json();
-      onSaved(String(equipamento.id));
-      alert("Equipamento salvo e vinculado à geradora com sucesso");
-      onNext();
+      await res.json();
+      setSavedCount((current) => current + 1);
+
+      if (mode === "add") {
+        setForm(INITIAL_FORM);
+        alert("Equipamento salvo. Preencha o próximo.");
+      } else {
+        alert("Equipamento salvo e vinculado à geradora com sucesso");
+        onNext();
+      }
     } catch {
       alert("Erro ao salvar equipamento");
     } finally {
-      setLoading(false);
+      setLoadingMode(null);
     }
   }
 
@@ -79,141 +165,212 @@ export default function StepEquipamento({
         style={{ maxWidth: "960px", width: "100%" }}
       >
         <form
-          onSubmit={handleSubmit}
           className="d-flex flex-column gap-3 gap-md-4 p-3 p-md-4 border rounded-4 bg-body-tertiary shadow-sm"
         >
-          <div className="row g-3">
-            <div className="col-md-6 form-floating">
-              <input
-                className="form-control rounded-3 border-secondary-subtle"
-                value={form.tipo_equipamento}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    tipo_equipamento: e.target.value,
-                  }))
-                }
-                placeholder="Tipo de equipamento"
-              />
-              <label>Tipo de equipamento</label>
-            </div>
-
-            <div className="col-md-6 form-floating">
-              <input
-                className="form-control rounded-3 border-secondary-subtle"
-                value={form.fabricante}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, fabricante: e.target.value }))
-                }
-                placeholder="Fabricante"
-              />
-              <label>Fabricante</label>
+          <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+            <h2 className="h6 mb-0 fw-bold text-uppercase">Equipamentos</h2>
+            <div className="alert alert-light border rounded-3 mb-0 py-2 px-3 small text-secondary">
+              Total cadastrado nesta etapa: <strong>{savedCount}</strong>
             </div>
           </div>
 
-          <div className="row g-3">
-            <div className="col-md-6 form-floating">
-              <input
-                className="form-control rounded-3 border-secondary-subtle"
-                value={form.modelo}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, modelo: e.target.value }))
-                }
-                placeholder="Modelo"
-              />
-              <label>Modelo</label>
-            </div>
+          <div className="card border rounded-3 bg-white">
+            <div className="card-body p-3 d-flex flex-column gap-3">
+              <h3 className="h6 mb-0">Cadastro de novo equipamento</h3>
 
-            <div className="col-md-6 form-floating">
-              <input
-                type="number"
-                step="0.01"
-                className="form-control rounded-3 border-secondary-subtle"
-                value={form.potencia_nominal}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    potencia_nominal: e.target.value,
-                  }))
-                }
-                placeholder="Potência nominal"
-              />
-              <label>Potência nominal</label>
+              <div className="row g-3">
+                <div className="col-md-6 form-floating">
+                  <input
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form.tipo_equipamento}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        tipo_equipamento: e.target.value,
+                      }))
+                    }
+                    placeholder="Tipo de equipamento"
+                  />
+                  <label>Tipo de equipamento</label>
+                </div>
+
+                <div className="col-md-6 form-floating">
+                  <input
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form.fabricante}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, fabricante: e.target.value }))
+                    }
+                    placeholder="Fabricante"
+                  />
+                  <label>Fabricante</label>
+                </div>
+              </div>
+
+              <div className="row g-3">
+                <div className="col-md-6 form-floating">
+                  <input
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form.modelo}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, modelo: e.target.value }))
+                    }
+                    placeholder="Modelo"
+                  />
+                  <label>Modelo</label>
+                </div>
+
+                <div className="col-md-6 form-floating">
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form.potencia_nominal}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        potencia_nominal: e.target.value,
+                      }))
+                    }
+                    placeholder="Potência nominal"
+                  />
+                  <label>Potência nominal</label>
+                </div>
+              </div>
+
+              <div className="row g-3">
+                <div className="col-md-3 form-floating">
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form.eficiencia_percent}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        eficiencia_percent: e.target.value,
+                      }))
+                    }
+                    placeholder="Eficiência (%)"
+                  />
+                  <label>Eficiência (%)</label>
+                </div>
+
+                <div className="col-md-3 form-floating">
+                  <input
+                    type="number"
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form.ano_fabricacao}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        ano_fabricacao: e.target.value,
+                      }))
+                    }
+                    placeholder="Ano de fabricação"
+                  />
+                  <label>Ano de fabricação</label>
+                </div>
+
+                <div className="col-md-3 form-floating">
+                  <input
+                    type="number"
+                    step="0.01"
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form.valor}
+                    onChange={(e) =>
+                      setForm((prev) => ({ ...prev, valor: e.target.value }))
+                    }
+                    placeholder="Valor"
+                  />
+                  <label>Valor</label>
+                </div>
+
+                <div className="col-md-3 form-floating">
+                  <input
+                    type="number"
+                    className="form-control rounded-3 border-secondary-subtle"
+                    value={form.vida_util_anos}
+                    onChange={(e) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        vida_util_anos: e.target.value,
+                      }))
+                    }
+                    placeholder="Vida útil (anos)"
+                  />
+                  <label>Vida útil (anos)</label>
+                </div>
+              </div>
+
+              <div className="d-flex flex-column flex-md-row justify-content-end gap-2">
+                <button
+                  type="button"
+                  disabled={loadingMode !== null}
+                  onClick={() => handleSave("add")}
+                  className="btn btn-outline-primary py-2 px-3 fw-semibold rounded-3 shadow-sm"
+                >
+                  {loadingMode === "add"
+                    ? "Salvando..."
+                    : "Salvar e incluir novo equipamento"}
+                </button>
+                <button
+                  type="button"
+                  disabled={loadingMode !== null}
+                  onClick={() => handleSave("review")}
+                  className="btn btn-primary py-2 px-3 fw-semibold rounded-3 shadow-sm"
+                >
+                  {loadingMode === "review"
+                    ? "Salvando..."
+                    : "Salvar e avançar para revisão"}
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="row g-3">
-            <div className="col-md-3 form-floating">
-              <input
-                type="number"
-                step="0.01"
-                className="form-control rounded-3 border-secondary-subtle"
-                value={form.eficiencia_percent}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    eficiencia_percent: e.target.value,
-                  }))
-                }
-                placeholder="Eficiência (%)"
-              />
-              <label>Eficiência (%)</label>
-            </div>
-
-            <div className="col-md-3 form-floating">
-              <input
-                type="number"
-                className="form-control rounded-3 border-secondary-subtle"
-                value={form.ano_fabricacao}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    ano_fabricacao: e.target.value,
-                  }))
-                }
-                placeholder="Ano de fabricação"
-              />
-              <label>Ano de fabricação</label>
-            </div>
-
-            <div className="col-md-3 form-floating">
-              <input
-                type="number"
-                step="0.01"
-                className="form-control rounded-3 border-secondary-subtle"
-                value={form.valor}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, valor: e.target.value }))
-                }
-                placeholder="Valor"
-              />
-              <label>Valor</label>
-            </div>
-
-            <div className="col-md-3 form-floating">
-              <input
-                type="number"
-                className="form-control rounded-3 border-secondary-subtle"
-                value={form.vida_util_anos}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    vida_util_anos: e.target.value,
-                  }))
-                }
-                placeholder="Vida útil (anos)"
-              />
-              <label>Vida útil (anos)</label>
+          <div className="card border rounded-3 bg-white">
+            <div className="card-body p-3 d-flex flex-column gap-2">
+              <h3 className="h6 mb-0">Vincular equipamento existente</h3>
+              <div className="d-flex flex-column flex-md-row gap-2">
+                <input
+                  className="form-control"
+                  value={existingSearch}
+                  onChange={(e) => setExistingSearch(e.target.value)}
+                  placeholder="Buscar por tipo, fabricante ou modelo"
+                />
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  disabled={loadingExisting}
+                  onClick={() => loadExistingEquipamentos(existingSearch)}
+                >
+                  {loadingExisting ? "Pesquisando..." : "Pesquisar"}
+                </button>
+              </div>
+              <select
+                className="form-select"
+                value={selectedExistingId}
+                onChange={(e) => setSelectedExistingId(e.target.value)}
+              >
+                <option value="">Selecione um equipamento</option>
+                {existingEquipamentos.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {formatExistingLabel(item)}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="btn btn-outline-primary align-self-start"
+                disabled={loadingMode !== null}
+                onClick={handleLinkExisting}
+              >
+                {loadingMode === "link"
+                  ? "Vinculando..."
+                  : "Vincular equipamento selecionado"}
+              </button>
             </div>
           </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary py-2 fw-semibold rounded-3 shadow-sm"
-          >
-            {loading ? "Salvando..." : "Salvar e revisar"}
-          </button>
         </form>
       </div>
     </div>

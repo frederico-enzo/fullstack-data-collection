@@ -248,7 +248,9 @@ function DataSection({
     .filter((row) => row.length > 0);
   const orderedSet = new Set(structuredRows.flatMap((row) => row.map(([key]) => key)));
   const remainingEntries = entries.filter(([key]) => !orderedSet.has(key));
-  const rows: Array<Array<(typeof entries)[number]>> = [...structuredRows];
+  const rows: Array<Array<(typeof entries)[number]>> = structuredRows.map(row =>
+    row.map(([k, v]) => [k, v] as [string, unknown])
+  );
 
   for (let i = 0; i < remainingEntries.length; i += 2) {
     rows.push(remainingEntries.slice(i, i + 2));
@@ -316,7 +318,6 @@ export default function FormularioPage() {
   const [atorId, setAtorId] = useState<string | null>(null);
   const [usinaId, setUsinaId] = useState<string | null>(null);
   const [tecnologia, setTecnologia] = useState<string | null>(null);
-  const [equipamentoId, setEquipamentoId] = useState<string | null>(null);
 
   const [reviewData, setReviewData] = useState<{
     ator?: AnyData | null;
@@ -416,10 +417,10 @@ export default function FormularioPage() {
                   onClick={() => goToUnlockedStep(stepKey)}
                   disabled={!isUnlocked}
                   className={`btn px-3 py-1 ${isActive
-                      ? "btn-primary"
-                      : isUnlocked
-                        ? "btn-outline-primary"
-                        : "btn-outline-secondary"
+                    ? "btn-primary"
+                    : isUnlocked
+                      ? "btn-outline-primary"
+                      : "btn-outline-secondary"
                     }`}
                 >
                   {STEP_LABELS[stepKey]}
@@ -436,7 +437,6 @@ export default function FormularioPage() {
               setAtorId(id);
               setUsinaId(null);
               setTecnologia(null);
-              setEquipamentoId(null);
               setReviewData(null);
               goToStep("geradora");
             }}
@@ -451,7 +451,6 @@ export default function FormularioPage() {
                 setFinished(false);
                 setUsinaId(uId);
                 setTecnologia(tech);
-                setEquipamentoId(null);
                 setReviewData(null);
                 goToStep("tecnologia");
               }}
@@ -477,8 +476,6 @@ export default function FormularioPage() {
           {usinaId && (
             <StepEquipamento
               usinaId={usinaId}
-              equipamentoId={equipamentoId}
-              onSaved={(id) => setEquipamentoId(id)}
               onNext={() => {
                 setFinished(false);
                 setReviewData(null);
@@ -496,12 +493,6 @@ export default function FormularioPage() {
             style={{ maxWidth: "960px", width: "100%" }}
           >
             <div className="card-body p-3 p-md-4">
-              <span className="badge text-bg-secondary mb-2">Etapa 5 de 5</span>
-              <h2 className="h6 fw-bold text-uppercase mb-2">Revisão Completa</h2>
-              <p className="small text-muted mb-3">
-                Confira todas as informações salvas antes de finalizar.
-              </p>
-
               {reviewLoading && (
                 <div className="alert alert-secondary">Carregando dados da revisão...</div>
               )}
