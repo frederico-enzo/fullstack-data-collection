@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useGlobalToast } from "@/app/components/GlobalToastProvider";
 
 interface StepEquipamentoProps {
   usinaId: string;
@@ -30,15 +31,16 @@ export default function StepEquipamento({
   usinaId,
   onNext,
 }: StepEquipamentoProps) {
+  const notify = useGlobalToast();
   const [loadingMode, setLoadingMode] = useState<"add" | "review" | "link" | null>(null);
   const [savedCount, setSavedCount] = useState(0);
   const [form, setForm] = useState(INITIAL_FORM);
   const [existingEquipamentos, setExistingEquipamentos] = useState<
     ExistingEquipamento[]
   >([]);
-  const [existingSearch, setExistingSearch] = useState("");
   const [selectedExistingId, setSelectedExistingId] = useState("");
   const [loadingExisting, setLoadingExisting] = useState(false);
+  const [existingError, setExistingError] = useState<string | null>(null);
 
   const toNumberOrNull = (value: string) =>
     value.trim() === "" ? null : Number(value);
@@ -47,6 +49,7 @@ export default function StepEquipamento({
     const trimmed = value.trim();
     return trimmed === "" ? null : trimmed;
   };
+  const hasFormData = Object.values(form).some((value) => value.trim() !== "");
 
   function formatExistingLabel(item: ExistingEquipamento) {
     const main = [
@@ -58,14 +61,13 @@ export default function StepEquipamento({
     return item.ano_fabricacao ? `${main} (${item.ano_fabricacao})` : main;
   }
 
-  async function loadExistingEquipamentos(search = "") {
+  const loadExistingEquipamentos = useCallback(async () => {
     setLoadingExisting(true);
+    setExistingError(null);
     try {
       const query = new URLSearchParams();
       query.set("limit", "30");
-      if (search.trim() !== "") {
-        query.set("search", search.trim());
-      }
+      query.set("usina_id", usinaId);
 
       const res = await fetch(`/api/equipamento?${query.toString()}`);
       if (!res.ok) {
@@ -75,22 +77,26 @@ export default function StepEquipamento({
       const data: ExistingEquipamento[] = await res.json();
       setExistingEquipamentos(data);
     } catch {
-      alert("Erro ao carregar equipamentos existentes");
+      const message = "Erro ao carregar equipamentos existentes.";
+      setExistingError(message);
+      notify(message, "error");
     } finally {
       setLoadingExisting(false);
     }
-  }
+  }, [notify, usinaId]);
 
   useEffect(() => {
-    loadExistingEquipamentos();
-  }, []);
+    void loadExistingEquipamentos();
+    setSelectedExistingId("");
+  }, [loadExistingEquipamentos]);
 
   async function handleLinkExisting() {
     if (!selectedExistingId) {
-      alert("Selecione um equipamento já cadastrado.");
+      notify("Selecione um equipamento já cadastrado.", "warning");
       return;
     }
 
+    const equipamentoId = selectedExistingId;
     setLoadingMode("link");
     try {
       const res = await fetch("/api/equipamento", {
@@ -98,7 +104,7 @@ export default function StepEquipamento({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           usina_id: usinaId,
-          equipamento_id: selectedExistingId,
+          equipamento_id: equipamentoId,
           vincular_existente: true,
         }),
       });
@@ -109,9 +115,11 @@ export default function StepEquipamento({
 
       await res.json();
       setSavedCount((current) => current + 1);
-      alert("Equipamento existente vinculado com sucesso.");
+      setSelectedExistingId("");
+      await loadExistingEquipamentos();
+      notify("Equipamento existente vinculado com sucesso.", "success");
     } catch {
-      alert("Erro ao vincular equipamento existente");
+      notify("Erro ao vincular equipamento existente", "error");
     } finally {
       setLoadingMode(null);
     }
@@ -146,16 +154,30 @@ export default function StepEquipamento({
 
       if (mode === "add") {
         setForm(INITIAL_FORM);
-        alert("Equipamento salvo. Preencha o próximo.");
+        notify("Equipamento salvo. Preencha o próximo.", "success");
       } else {
-        alert("Equipamento salvo e vinculado à geradora com sucesso");
+        notify("Equipamento salvo e vinculado à geradora com sucesso", "success");
         onNext();
       }
     } catch {
-      alert("Erro ao salvar equipamento");
+      notify("Erro ao salvar equipamento", "error");
     } finally {
       setLoadingMode(null);
     }
+  }
+
+  async function handleAdvance() {
+    if (hasFormData) {
+      await handleSave("review");
+      return;
+    }
+
+    if (savedCount > 0) {
+      onNext();
+      return;
+    }
+
+    notify("Cadastre ou vincule ao menos um equipamento para avançar.", "warning");
   }
 
   return (
@@ -166,11 +188,48 @@ export default function StepEquipamento({
       >
         <form
           className="d-flex flex-column gap-3 gap-md-4 p-3 p-md-4 border rounded-4 bg-body-tertiary shadow-sm"
+          onSubmit={(e) => e.preventDefault()}
         >
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
             <h2 className="h6 mb-0 fw-bold text-uppercase">Equipamentos</h2>
-            <div className="alert alert-light border rounded-3 mb-0 py-2 px-3 small text-secondary">
+            <div className="bg-light border rounded-3 mb-0 py-2 px-3 small text-secondary">
               Total cadastrado nesta etapa: <strong>{savedCount}</strong>
+            </div>
+          </div>
+
+          <div className="card border rounded-3 bg-white">
+            <div className="card-body p-3 d-flex flex-column gap-2">
+              <h3 className="h6 mb-0">Vincular equipamento existente</h3>
+              <div className="small text-muted">
+                {loadingExisting
+                  ? "Atualizando lista de equipamentos..."
+                  : `${existingEquipamentos.length} equipamento(s) encontrado(s).`}
+              </div>
+              {existingError && <div className="small text-danger">{existingError}</div>}
+              <div className="d-flex flex-column flex-md-row gap-2">
+                <select
+                  className="form-select"
+                  value={selectedExistingId}
+                  onChange={(e) => setSelectedExistingId(e.target.value)}
+                >
+                  <option value="">Selecione um equipamento</option>
+                  {existingEquipamentos.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {formatExistingLabel(item)}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="btn btn-outline-primary"
+                  disabled={loadingMode !== null || !selectedExistingId}
+                  onClick={handleLinkExisting}
+                >
+                  {loadingMode === "link"
+                    ? "Vinculando..."
+                    : "Vincular"}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -312,63 +371,19 @@ export default function StepEquipamento({
                 >
                   {loadingMode === "add"
                     ? "Salvando..."
-                    : "Salvar e incluir novo equipamento"}
+                    : "Cadastrar"}
                 </button>
                 <button
                   type="button"
                   disabled={loadingMode !== null}
-                  onClick={() => handleSave("review")}
+                  onClick={() => void handleAdvance()}
                   className="btn btn-primary py-2 px-3 fw-semibold rounded-3 shadow-sm"
                 >
                   {loadingMode === "review"
                     ? "Salvando..."
-                    : "Salvar e avançar para revisão"}
+                    : "Avançar"}
                 </button>
               </div>
-            </div>
-          </div>
-
-          <div className="card border rounded-3 bg-white">
-            <div className="card-body p-3 d-flex flex-column gap-2">
-              <h3 className="h6 mb-0">Vincular equipamento existente</h3>
-              <div className="d-flex flex-column flex-md-row gap-2">
-                <input
-                  className="form-control"
-                  value={existingSearch}
-                  onChange={(e) => setExistingSearch(e.target.value)}
-                  placeholder="Buscar por tipo, fabricante ou modelo"
-                />
-                <button
-                  type="button"
-                  className="btn btn-outline-secondary"
-                  disabled={loadingExisting}
-                  onClick={() => loadExistingEquipamentos(existingSearch)}
-                >
-                  {loadingExisting ? "Pesquisando..." : "Pesquisar"}
-                </button>
-              </div>
-              <select
-                className="form-select"
-                value={selectedExistingId}
-                onChange={(e) => setSelectedExistingId(e.target.value)}
-              >
-                <option value="">Selecione um equipamento</option>
-                {existingEquipamentos.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {formatExistingLabel(item)}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                className="btn btn-outline-primary align-self-start"
-                disabled={loadingMode !== null}
-                onClick={handleLinkExisting}
-              >
-                {loadingMode === "link"
-                  ? "Vinculando..."
-                  : "Vincular equipamento selecionado"}
-              </button>
             </div>
           </div>
         </form>

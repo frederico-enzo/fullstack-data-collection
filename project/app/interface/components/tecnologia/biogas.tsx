@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useGlobalToast } from "@/app/components/GlobalToastProvider";
 
 interface BiogasProps {
     usinaId: string;
@@ -8,6 +9,7 @@ interface BiogasProps {
 }
 
 export default function Biogas({ usinaId, onNext }: BiogasProps) {
+    const notify = useGlobalToast();
     const [loading, setLoading] = useState(false);
 
     const [form, setForm] = useState({
@@ -65,10 +67,10 @@ export default function Biogas({ usinaId, onNext }: BiogasProps) {
                 throw new Error();
             }
 
-            alert("Biogás cadastrado com sucesso");
+            notify("Biogás cadastrado com sucesso", "success");
             onNext();
         } catch {
-            alert("Erro ao salvar dados de biogás");
+            notify("Erro ao salvar dados de biogás", "error");
         } finally {
             setLoading(false);
         }

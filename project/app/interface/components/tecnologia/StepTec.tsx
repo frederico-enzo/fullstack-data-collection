@@ -1,10 +1,11 @@
 "use client";
 
-import type { ComponentType } from "react";
+import { useEffect, type ComponentType } from "react";
 import Fotovoltaica from "./fotovoltaica";
 import Biogas from "./biogas";
 import PCH from "./pch";
 import BESS from "./bess";
+import { useGlobalToast } from "@/app/components/GlobalToastProvider";
 
 interface StepTecProps {
   usinaId: string;
@@ -29,6 +30,16 @@ export default function StepTecn({
   tecnologia,
   onNext,
 }: StepTecProps) {
+  const notify = useGlobalToast();
+
+  useEffect(() => {
+    const validTecnologias = ["FOTOVOLTAICA", "BIOGAS", "PCH", "ARMAZENAMENTO"];
+
+    if (!validTecnologias.includes(tecnologia)) {
+      notify("Tecnologia inválida para esta usina.", "warning");
+    }
+  }, [notify, tecnologia]);
+
   switch (tecnologia) {
     case "FOTOVOLTAICA":
       return <FotovoltaicaComp usinaId={usinaId} onNext={onNext} />;
@@ -42,7 +53,7 @@ export default function StepTecn({
       return (
         <div className="container py-3 py-md-4">
           <div
-            className="alert alert-warning border-0 shadow-sm mx-auto rounded-4 mb-0"
+            className="border border-warning-subtle bg-warning-subtle text-warning-emphasis shadow-sm mx-auto rounded-4 mb-0 p-3"
             style={{ maxWidth: "720px", width: "100%" }}
           >
             Tecnologia inválida para esta usina.

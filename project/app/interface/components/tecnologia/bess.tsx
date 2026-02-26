@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useGlobalToast } from "@/app/components/GlobalToastProvider";
 
 interface BESSProps {
   usinaId: string;
@@ -8,6 +9,7 @@ interface BESSProps {
 }
 
 export default function BESS({ usinaId, onNext }: BESSProps) {
+  const notify = useGlobalToast();
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -88,10 +90,10 @@ export default function BESS({ usinaId, onNext }: BESSProps) {
         throw new Error();
       }
 
-      alert("Armazenamento (BESS) cadastrado com sucesso");
+      notify("Armazenamento (BESS) cadastrado com sucesso", "success");
       onNext();
     } catch {
-      alert("Erro ao salvar dados do armazenamento (BESS)");
+      notify("Erro ao salvar dados do armazenamento (BESS)", "error");
     } finally {
       setLoading(false);
     }

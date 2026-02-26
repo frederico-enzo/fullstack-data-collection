@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans } from "next/font/google";
+import GlobalToastProvider from "./components/GlobalToastProvider";
 import "./globals.css";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -21,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="pt" data-bs-theme="light">
       <body className={`${ibmPlexSans.variable} antialiased`}>
-        {children}
+        <GlobalToastProvider>{children}</GlobalToastProvider>
       </body>
     </html>
   );

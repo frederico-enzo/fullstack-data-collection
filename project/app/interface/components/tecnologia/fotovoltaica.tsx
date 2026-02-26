@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useGlobalToast } from "@/app/components/GlobalToastProvider";
 
 interface FotovoltaicaProps {
   usinaId: string;
@@ -8,6 +9,7 @@ interface FotovoltaicaProps {
 }
 
 export default function Fotovoltaica({ usinaId, onNext }: FotovoltaicaProps) {
+  const notify = useGlobalToast();
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
@@ -80,10 +82,10 @@ export default function Fotovoltaica({ usinaId, onNext }: FotovoltaicaProps) {
         throw new Error();
       }
 
-      alert("Fotovoltaica cadastrada com sucesso");
+      notify("Fotovoltaica cadastrada com sucesso", "success");
       onNext();
     } catch {
-      alert("Erro ao salvar dados da fotovoltaica");
+      notify("Erro ao salvar dados da fotovoltaica", "error");
     } finally {
       setLoading(false);
     }

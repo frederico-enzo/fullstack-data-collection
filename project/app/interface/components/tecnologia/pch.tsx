@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useGlobalToast } from "@/app/components/GlobalToastProvider";
 
 interface PCHProps {
   usinaId: string;
@@ -53,6 +54,7 @@ const conexaoCampos: Array<[keyof PchFormState, string]> = [
 ];
 
 export default function PCH({ usinaId, onNext }: PCHProps) {
+  const notify = useGlobalToast();
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState<PchFormState>({
@@ -124,10 +126,10 @@ export default function PCH({ usinaId, onNext }: PCHProps) {
 
       if (!res.ok) throw new Error();
 
-      alert("PCH cadastrada com sucesso");
+      notify("PCH cadastrada com sucesso", "success");
       onNext();
     } catch {
-      alert("Erro ao salvar dados da PCH");
+      notify("Erro ao salvar dados da PCH", "error");
     } finally {
       setLoading(false);
     }

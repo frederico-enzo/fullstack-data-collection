@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useGlobalToast } from "@/app/components/GlobalToastProvider";
 
 interface Municipio {
   id: string;
@@ -13,6 +14,7 @@ interface StepGeradoraProps {
 }
 
 export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
+  const notify = useGlobalToast();
   const [loading, setLoading] = useState(false);
   const [municipios, setMunicipios] = useState<Municipio[]>([]);
   const [municipioNome, setMunicipioNome] = useState("");
@@ -33,14 +35,14 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
     fetch("/api/municipio")
       .then((res) => res.json())
       .then(setMunicipios)
-      .catch(() => alert("Erro ao carregar municípios"));
-  }, []);
+      .catch(() => notify("Erro ao carregar municípios", "error"));
+  }, [notify]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     if (!form.municipio_id) {
-      alert("Selecione um município válido da lista.");
+      notify("Selecione um município válido da lista.", "warning");
       return;
     }
 
@@ -78,7 +80,7 @@ export default function StepGeradora({ atorId, onNext }: StepGeradoraProps) {
 
     if (!res.ok) {
       const err = await res.json().catch(() => null);
-      alert(err?.error || "Erro ao salvar geradora");
+      notify(err?.error || "Erro ao salvar geradora", "error");
       setLoading(false);
       return;
     }

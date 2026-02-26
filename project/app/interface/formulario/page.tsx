@@ -5,6 +5,7 @@ import StepAtor from "../components/ator/StepAtor";
 import StepGeradora from "../components/geradora/StepGeradora";
 import StepTecnologia from "../components/tecnologia/StepTec";
 import StepEquipamento from "../components/equipamento/StepEquipamento";
+import { useGlobalToast } from "@/app/components/GlobalToastProvider";
 
 type StepKey = "ator" | "geradora" | "tecnologia" | "equipamento" | "revisao";
 type AnyData = Record<string, unknown>;
@@ -311,6 +312,7 @@ function DataSection({
 }
 
 export default function FormularioPage() {
+  const notify = useGlobalToast();
   const [step, setStep] = useState<StepKey>("ator");
   const [maxUnlockedStepIndex, setMaxUnlockedStepIndex] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -375,6 +377,16 @@ export default function FormularioPage() {
       mounted = false;
     };
   }, [step, atorId, usinaId]);
+
+  useEffect(() => {
+    if (!reviewError) return;
+    notify(reviewError, "error");
+  }, [notify, reviewError]);
+
+  useEffect(() => {
+    if (!finished) return;
+    notify("Cadastro finalizado com sucesso.", "success");
+  }, [finished, notify]);
 
   return (
     <div
@@ -494,11 +506,15 @@ export default function FormularioPage() {
           >
             <div className="card-body p-3 p-md-4">
               {reviewLoading && (
-                <div className="alert alert-secondary">Carregando dados da revisão...</div>
+                <div className="border rounded-3 bg-light px-3 py-2 small text-secondary">
+                  Carregando dados da revisão...
+                </div>
               )}
 
               {reviewError && (
-                <div className="alert alert-danger">{reviewError}</div>
+                <div className="border border-danger-subtle bg-danger-subtle text-danger-emphasis rounded-3 px-3 py-2 small">
+                  {reviewError}
+                </div>
               )}
 
               {!reviewLoading && !reviewError && (
@@ -538,7 +554,7 @@ export default function FormularioPage() {
               </button>
 
               {finished && (
-                <div className="alert alert-success mt-3 mb-0">
+                <div className="small text-success mt-3 mb-0 fw-semibold">
                   Cadastro finalizado com sucesso.
                 </div>
               )}

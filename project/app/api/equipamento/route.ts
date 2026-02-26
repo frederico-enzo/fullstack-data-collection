@@ -48,6 +48,10 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const search = (searchParams.get("search") || "").trim();
+    const usinaIdParam = searchParams.get("usina_id");
+    const vinculo = (searchParams.get("vinculo") || "todos")
+      .trim()
+      .toLowerCase();
     const limitRaw = searchParams.get("limit");
     const limit = Math.min(
       100,
@@ -56,17 +60,41 @@ export async function GET(req: Request) {
         limitRaw && /^\d+$/.test(limitRaw) ? Number.parseInt(limitRaw, 10) : 20
       )
     );
+    const usinaId = parseOptionalBigInt(usinaIdParam);
+    const whereClauses: Record<string, unknown>[] = [];
+
+    if (search) {
+      whereClauses.push({
+        OR: [
+          { tipo_equipamento: { contains: search, mode: "insensitive" } },
+          { fabricante: { contains: search, mode: "insensitive" } },
+          { modelo: { contains: search, mode: "insensitive" } },
+        ],
+      });
+    }
+
+    if (usinaId && vinculo === "vinculados") {
+      whereClauses.push({
+        geradora_equipamento: {
+          some: {
+            geradora_id: usinaId,
+          },
+        },
+      });
+    }
+
+    if (usinaId && vinculo === "nao_vinculados") {
+      whereClauses.push({
+        geradora_equipamento: {
+          none: {
+            geradora_id: usinaId,
+          },
+        },
+      });
+    }
 
     const equipamentos = await prisma.equipamento.findMany({
-      where: search
-        ? {
-            OR: [
-              { tipo_equipamento: { contains: search, mode: "insensitive" } },
-              { fabricante: { contains: search, mode: "insensitive" } },
-              { modelo: { contains: search, mode: "insensitive" } },
-            ],
-          }
-        : undefined,
+      where: whereClauses.length > 0 ? { AND: whereClauses } : undefined,
       orderBy: { id: "desc" },
       take: limit,
       select: {
@@ -113,6 +141,21 @@ export async function POST(req: Request) {
       vida_util_anos: parseOptionalInt(body.vida_util_anos, "vida_util_anos"),
     });
 
+    if (vincularExistente && !equipamentoId) {
+      throw new Error("Campo equipamento_id é obrigatório para vincular existente.");
+    }
+
+    const parsedData = data();
+    const hasAnyEquipamentoField = Object.values(parsedData).some(
+      (value) => value !== null
+    );
+
+    if (!equipamentoId && !hasAnyEquipamentoField) {
+      throw new Error(
+        "Campo de equipamento deve conter ao menos um dado para cadastro."
+      );
+    }
+
     const equipamento = await prisma.$transaction(async (tx) => {
       if (equipamentoId && vincularExistente) {
         const existingEquipamento = await tx.equipamento.findUnique({
@@ -145,7 +188,7 @@ export async function POST(req: Request) {
       if (equipamentoId) {
         const updatedEquipamento = await tx.equipamento.update({
           where: { id: equipamentoId },
-          data: data(),
+          data: parsedData,
         });
 
         const existingRelation = await tx.geradora_equipamento.findFirst({
@@ -167,7 +210,7 @@ export async function POST(req: Request) {
         return updatedEquipamento;
       }
 
-      const createdEquipamento = await tx.equipamento.create({ data: data() });
+      const createdEquipamento = await tx.equipamento.create({ data: parsedData });
 
       await tx.geradora_equipamento.create({
         data: {

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import type { ator as Ator } from "@prisma/client";
 import { prisma } from "@/app/server/db";
 
 export async function GET(req: Request) {
@@ -16,7 +17,7 @@ export async function GET(req: Request) {
   const clean = raw.replace(/\D/g, "");
 
   // busca ignorando pontuação no banco
-  const result = await prisma.$queryRaw<any[]>`
+  const result = await prisma.$queryRaw<Ator[]>`
     SELECT *
     FROM ator
     WHERE regexp_replace(cnpj_cpf, '\\D', '', 'g') = ${clean}

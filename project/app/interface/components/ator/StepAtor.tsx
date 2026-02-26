@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { IMaskInput } from "react-imask";
+import { useGlobalToast } from "@/app/components/GlobalToastProvider";
 
 interface AtorFormProps {
   onAtorSelect: (id: string) => void;
@@ -15,6 +16,7 @@ interface AtorRecord {
 }
 
 export default function StepAtor({ onAtorSelect }: AtorFormProps) {
+  const notify = useGlobalToast();
   const [loading, setLoading] = useState(false);
   const [found, setFound] = useState(false);
   const [existingAtor, setExistingAtor] = useState<AtorRecord | null>(null);
@@ -50,6 +52,7 @@ export default function StepAtor({ onAtorSelect }: AtorFormProps) {
 
       setExistingAtor(ator);
       setFound(true);
+      notify("Ator já cadastrado. Dados carregados automaticamente.", "info");
     }
   }
 
@@ -71,7 +74,7 @@ export default function StepAtor({ onAtorSelect }: AtorFormProps) {
 
     if (!res.ok) {
       const err = await res.json();
-      alert(err.error || "Erro ao salvar ator");
+      notify(err.error || "Erro ao salvar ator", "error");
       setLoading(false);
       return;
     }
@@ -91,12 +94,6 @@ export default function StepAtor({ onAtorSelect }: AtorFormProps) {
           onSubmit={handleSubmit}
           className="d-flex flex-column gap-3 gap-md-4 p-3 p-md-4 border rounded-4 bg-body-tertiary shadow-sm"
         >
-          {found && (
-            <div className="alert alert-secondary py-2 px-3 small mb-2">
-              Ator já cadastrado. Dados carregados automaticamente.
-            </div>
-          )}
-
           {/* CPF / CNPJ */}
           <div className="form-floating">
             <IMaskInput
